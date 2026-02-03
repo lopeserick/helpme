@@ -1,0 +1,22 @@
+:root {
+  /* PRIMARY */
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
+  --blue-dark: #1e40af;
+  --green: #7FFF00;
+  --green-strong: #32CD32;
+  --green-neutral: #228B22;
+  --dark-green: #006400;
+
+  /* NEUTRAL */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-600: #4b5563;
+  --gray-800: #1f2937;
+
+  /* SHADOWS */
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 20px rgba(0,0,0,0.12);
+
+  --radius-lg: 12px;
+}

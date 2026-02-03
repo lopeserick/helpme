@@ -1,0 +1,20 @@
+.categories {
+  padding: 60px 0;
+}
+
+.categories h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width:768px){
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
