@@ -1,4 +1,5 @@
 import styles from './styles.module.css';
+import {Search} from 'lucide-react';
 
 export default function Header() {
   return (
@@ -9,8 +10,9 @@ export default function Header() {
           Pesquise na nossa base de conhecimento ou navegue por categorias
         </p>
 
-        <div className={styles.search}>
-          <input placeholder="Digite sua dúvida aqui..." />
+          <div className={styles.search}>
+          <Search className={styles.icon} />
+          <input placeholder="Digite sua dúvida aqui..."/>
         </div>
       </div>
     </header>

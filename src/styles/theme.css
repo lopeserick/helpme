@@ -9,10 +9,10 @@
   --dark-green: #006400;
 
   /* NEUTRAL */
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-600: #4b5563;
-  --gray-800: #1f2937;
+  --white: #f9fafb;
+  --white-less: #f3f4f6;
+  --grey: #4b5563;
+  --dark-grey: #1f2937;
 
   /* SHADOWS */
   --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
