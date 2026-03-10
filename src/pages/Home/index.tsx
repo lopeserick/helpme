@@ -27,23 +27,27 @@ export default function Home() {
             title="Gestão de Estoque"
             description="Gerencie produtos e movimentações"
             icon = {<Database />}
+            to = '/Estoque'
           />
 
           <CategoryCard
             title="Financeiro"
             description="Controle de contas e fluxo de caixa"
             icon = {<CircleDollarSign />}
+            to = '/Estoque'
           />
           <CategoryCard
             title="Sintegra"
             description="Arquivos e Relatórios Fiscais"
             icon = {<BookOpenText />}
+            to = '/Estoque'
           />
           
           <CategoryCard
             title="Primeiros Passos"
             description="Como realizar as rotinas básicas do Acesse Brasil"
             icon ={<CircleStar />}
+            to = '/Estoque'
           />
 
         </div>
