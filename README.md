@@ -1,205 +1,97 @@
-# 🏥 Help Center - Projeto React + TypeScript + Tailwind
+# Help Me — central de ajuda
 
-Um sistema de central de ajuda moderno e responsivo, construído com React, TypeScript e Tailwind CSS.
+Central de ajuda para o ERP (estoque, financeiro, fiscal/Sintegra), feita para
+mostrar a ideia à empresa. Hoje é um front-end com dados dentro do código; a
+estrutura já está pronta para trocar esses dados por uma API ou CMS depois.
 
-## 📁 Estrutura do Projeto
+## Tecnologias
 
-```
-help-center-project/
-├── public/                        # Arquivos estáticos
-├── src/
-│   ├── components/
-│   │   ├── CategoryCard/         # Card de categoria
-│   │   │   └── index.tsx
-│   │   ├── Header/               # Cabeçalho
-│   │   │   └── index.tsx
-│   │   ├── PopularArticles/      # Artigos populares
-│   │   │   └── index.tsx
-│   │   └── SearchInput/          # Campo de busca
-│   │       └── index.tsx
-│   ├── data/
-│   │   └── helpCenter.ts         # Dados da aplicação
-│   ├── App.tsx                   # Componente principal
-│   ├── main.tsx                  # Entry point
-│   └── index.css                 # Estilos globais + Tailwind
-├── index.html                     # HTML raiz
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.js
-└── postcss.config.js
-```
+- React 18 + TypeScript (modo estrito)
+- Vite 5 (servidor de desenvolvimento e build)
+- React Router 7 (rotas)
+- CSS Modules + variáveis CSS (sem Tailwind)
+- lucide-react (ícones) e Schibsted Grotesk (fonte, hospedada no projeto)
+- ESLint 9 com typescript-eslint
 
-## 🚀 Como Rodar o Projeto
+Testado com Node 22.
 
-### 1. Instalar Dependências
+## Como rodar
 
 ```bash
 npm install
-```
-
-ou
-
-```bash
-yarn install
-```
-
-### 2. Rodar em Desenvolvimento
-
-```bash
 npm run dev
 ```
 
-ou
+O Vite abre `http://localhost:3000` automaticamente.
 
-```bash
-yarn dev
+| Comando           | O que faz                                      |
+| ----------------- | ---------------------------------------------- |
+| `npm run dev`     | Servidor de desenvolvimento                    |
+| `npm run build`   | Checa os tipos (`tsc`) e gera a pasta `dist/`  |
+| `npm run preview` | Serve o build gerado, para conferir como fica  |
+| `npm run lint`    | Roda o ESLint                                  |
+
+## Estrutura
+
+```
+src/
+├── App.tsx                  # Rotas
+├── main.tsx                 # Entrada: fonte, tema e estilos globais
+├── data/helpCenter.ts       # Categorias e rotinas (fonte única dos dados)
+├── components/
+│   ├── Header/              # Topo com título e campo de busca
+│   ├── CategoryCard/        # Linha de categoria (a linha inteira é um link)
+│   ├── CategoryIcon/        # Converte o nome do ícone em componente
+│   ├── Index/               # Lista "Rotinas mais acessadas"
+│   └── PageShell/           # Estrutura das páginas internas (voltar + título)
+├── pages/                   # Uma pasta por rota
+└── styles/
+    ├── theme.css            # Todas as cores, raios e sombras (variáveis)
+    └── global.css           # Reset, corpo, container e foco
 ```
 
-O projeto vai abrir automaticamente em `http://localhost:3000`
+## Rotas
 
-### 3. Build para Produção
+| Rota                | Página             | Estado               |
+| ------------------- | ------------------ | -------------------- |
+| `/`                 | Home               | Pronta               |
+| `/estoque`          | Gestão de Estoque  | Em construção        |
+| `/financeiro`       | Financeiro         | Em construção        |
+| `/sintegra`         | Sintegra           | Em construção        |
+| `/primeiros-passos` | Primeiros Passos   | Em construção        |
+| `/novidades`        | O que há de novo   | Em construção (sem link na Home) |
+| `/relatorios`       | Relatórios         | Em construção (sem link na Home) |
+| qualquer outra      | Página não encontrada | Pronta            |
 
-```bash
-npm run build
-```
+## Como adicionar uma categoria
 
-ou
+1. Em `src/data/helpCenter.ts`, inclua um item em `categories` (`id`, `title`,
+   `description`, `path` e `icon`). Se precisar de um ícone novo, acrescente o
+   nome em `CategoryIconName` e o componente em `components/CategoryIcon`.
+2. Crie a página em `src/pages/<Nome>/index.tsx` usando `PageShell`.
+3. Registre a rota em `src/App.tsx`.
 
-```bash
-yarn build
-```
+## Tema
 
-### 4. Preview do Build
+Toda cor, raio e sombra vem de `src/styles/theme.css`. Se uma variável não
+existe nesse arquivo, ela não deve ser usada nos componentes.
 
-```bash
-npm run preview
-```
+## Do código para uma API
 
-## 📦 Dependências Principais
+Os tipos `Category` e `Routine` em `src/data/helpCenter.ts` são o contrato da
+tela e só contêm dados simples (o ícone é um nome, não um componente). Quando os
+dados vierem de um servidor ou CMS, mantenha esses tipos, troque o import da
+Home por uma função assíncrona (por exemplo, `getCategories()`) e acrescente
+estados de carregamento e de erro.
 
-- **React 18** - Biblioteca UI
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool e dev server
-- **Tailwind CSS** - Framework de estilos
-- **PostCSS** - Processador CSS
-- **Autoprefixer** - Prefixos CSS automáticos
+## Pendências conhecidas
 
-## 🎨 Componentes
-
-### CategoryCard
-Exibe categorias de ajuda com:
-- Ícones customizados (SVG)
-- Cores por categoria
-- Contador de artigos
-- Efeitos de hover
-
-### Header
-Cabeçalho da página com:
-- Título e subtítulo
-- Campo de busca integrado
-- Gradiente azul
-
-### PopularArticles
-Lista de artigos mais acessados:
-- Badges numerados
-- Hover effects
-- Layout responsivo
-
-### SearchInput
-Campo de busca reutilizável:
-- Ícone de lupa
-- Placeholder customizável
-- Gerenciamento de estado
-
-## 🎯 Customização
-
-### Adicionar Nova Categoria
-
-Edite `src/data/helpCenter.ts`:
-
-```typescript
-{
-  icon: 'nome-do-icone',
-  title: "Título da Categoria",
-  description: "Descrição breve",
-  articles: 10,
-  color: "blue" // blue, green, purple, orange, gray, red
-}
-```
-
-### Adicionar Novo Ícone
-
-No componente `CategoryCard`, adicione no objeto `icons`:
-
-```typescript
-'novo-icone': (
-  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    {/* SVG path aqui */}
-  </svg>
-)
-```
-
-### Alterar Cores do Tema
-
-Edite `tailwind.config.js` para personalizar as cores padrão do Tailwind.
-
-## 📱 Responsividade
-
-O projeto é totalmente responsivo com breakpoints:
-- **Mobile**: < 768px (1 coluna)
-- **Tablet**: 768px - 1024px (2 colunas)
-- **Desktop**: > 1024px (3 colunas)
-
-## ✨ Recursos
-
-- ✅ Componentes modulares
-- ✅ TypeScript para type safety
-- ✅ Tailwind CSS para estilização rápida
-- ✅ Vite para build ultra-rápido
-- ✅ Hot Module Replacement (HMR)
-- ✅ SVG icons inline
-- ✅ Hover effects e animações
-- ✅ Design moderno e limpo
-
-## 🛠️ Possíveis Expansões
-
-- [ ] Sistema de busca funcional
-- [ ] Roteamento para páginas de artigos
-- [ ] API integration
-- [ ] Sistema de autenticação
-- [ ] Modo escuro/claro
-- [ ] Internacionalização (i18n)
-- [ ] Analytics de artigos
-
-## 📝 Notas Técnicas
-
-- **Vite**: Build tool moderno, muito mais rápido que Webpack
-- **CSS Modules**: Removido para simplificar (usando apenas Tailwind)
-- **SVG Icons**: Inline ao invés de biblioteca externa para reduzir bundle
-- **TypeScript Strict**: Configurado para máxima type safety
-
-## 🐛 Troubleshooting
-
-### Tela branca após build
-- Verifique se todas as dependências foram instaladas
-- Execute `npm install` novamente
-- Limpe o cache: `rm -rf node_modules && npm install`
-
-### Tailwind não funciona
-- Verifique se o PostCSS está configurado
-- Confirme que `@tailwind` directives estão no `index.css`
-- Reinicie o servidor de desenvolvimento
-
-### Erros de TypeScript
-- Execute `npm run build` para ver erros completos
-- Verifique se todos os tipos estão corretos
-- Consulte `tsconfig.json` para configurações
-
-## 📄 Licença
-
-MIT
-
-## 👨‍💻 Desenvolvimento
-
-Desenvolvido com ❤️ usando React, TypeScript e Tailwind CSS.
+- A busca do topo é só visual: digitar não filtra nada.
+- As páginas de categoria ainda não têm artigos.
+- Não há testes automatizados nem integração contínua.
+- `npm audit` aponta 2 avisos que afetam apenas o servidor de desenvolvimento
+  (Vite 5 / esbuild); corrigir exige subir o Vite de versão principal.
+- `tsconfig.app.json` não é referenciado por `tsconfig.json` (o build usa o
+  `tsconfig.json`).
+- O nome aparece de três formas (Help Me, Help Center, "Suporte Rápido" no
+  título da aba) e o texto da Home cita "Acesse Brasil"; vale padronizar.
