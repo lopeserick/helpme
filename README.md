@@ -43,9 +43,11 @@ src/
 │   ├── CategoryCard/        # Linha de categoria (a linha inteira é um link)
 │   ├── CategoryIcon/        # Converte o nome do ícone em componente
 │   ├── Index/               # Lista "Rotinas mais acessadas"
+│   ├── NewsAlert/           # Alerta de novidades do ERP, na Home
 │   ├── PageHeader/          # Faixa verde do topo (Home e páginas internas)
 │   ├── PageShell/           # Estrutura das páginas internas (voltar + título)
-│   └── RoutineTopics/       # Tópicos de rotina recolhíveis (texto e imagem)
+│   ├── RoutineTopics/       # Tópicos de rotina recolhíveis (texto e imagem)
+│   └── SearchRoutines/      # Busca com sugestões de rotinas
 ├── pages/                   # Uma pasta por rota
 └── styles/
     ├── theme.css            # Todas as cores, raios e sombras (variáveis)
@@ -61,7 +63,7 @@ src/
 | `/financeiro`       | Financeiro         | Tópicos de exemplo   |
 | `/sintegra`         | Sintegra           | Tópicos de exemplo   |
 | `/primeiros-passos` | Primeiros Passos   | Tópicos de exemplo   |
-| `/novidades`        | O que há de novo   | Tópicos de exemplo (sem link na Home) |
+| `/novidades`        | O que há de novo   | Acessível pelo alerta da Home |
 | `/relatorios`       | Relatórios         | Tópicos de exemplo (sem link na Home) |
 | qualquer outra      | Página não encontrada | Pronta            |
 
@@ -86,6 +88,27 @@ página. Cada tópico tem `id`, `title` (o nome que aparece com ele fechado) e
 
 As imagens ficam em `public/` e o `src` começa com `/`. O `alt` descreve a
 imagem para quem usa leitor de tela, então não deixe em branco.
+
+## Avisos de novidades do ERP
+
+Cada item de `topicsByPage.novidades` é um aviso de implantação no Acesse:
+rotina nova, programa novo ou validação fiscal. O mais recente vira o alerta
+da Home (`components/NewsAlert`), que é o caminho até `/novidades` — essa
+página não aparece na lista de categorias.
+
+Para anunciar algo, acrescente um item com `tag` ("Rotina nova", "Programa
+novo" ou "Validação fiscal") e `date` no formato `AAAA-MM-DD`. O alerta
+escolhe sozinho o aviso de data mais recente. Sem nenhum item na lista, o
+alerta não aparece.
+
+## Busca
+
+A busca da Home procura pelo nome da rotina e pelo nome da página, ignorando
+acentos e maiúsculas, a partir de duas letras digitadas. Ao escolher uma
+sugestão, a pessoa vai para a página com o id do tópico no endereço
+(`/estoque#inventario`); `RoutineTopics` lê esse id, abre o tópico e o destaca
+por alguns segundos. Isso significa que qualquer endereço nesse formato pode
+ser compartilhado e abre direto no tópico certo.
 
 ## Tema
 

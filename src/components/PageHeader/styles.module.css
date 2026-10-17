@@ -1,6 +1,9 @@
+/*
+ * Sem overflow: hidden aqui. A grade decorativa já fica contida (inset: 0),
+ * e esconder o excesso cortaria a lista de sugestões da busca.
+ */
 .band {
   position: relative;
-  overflow: hidden;
   background: var(--brand-900);
   color: var(--paper);
 }

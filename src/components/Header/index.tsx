@@ -1,5 +1,5 @@
-import { Search } from 'lucide-react';
 import PageHeader from '../PageHeader';
+import SearchRoutines from '../SearchRoutines';
 import styles from './styles.module.css';
 
 export default function Header() {
@@ -10,14 +10,7 @@ export default function Header() {
         Pesquise na nossa base de conhecimento ou navegue por categorias
       </p>
 
-      <div className={styles.search} role="search">
-        <Search className={styles.icon} aria-hidden="true" />
-        <input
-          type="search"
-          aria-label="Pesquisar na base de conhecimento"
-          placeholder="Digite sua dúvida aqui..."
-        />
-      </div>
+      <SearchRoutines />
     </PageHeader>
   );
 }
