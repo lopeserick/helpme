@@ -1,3 +1,5 @@
-export default function Estoque(){
-    return <h1>página do estoque</h1>
+import PageShell from '../../components/PageShell';
+
+export default function Estoque() {
+  return <PageShell title="Gestão de Estoque" />;
 }

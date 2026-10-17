@@ -1,3 +1,5 @@
-export default function Sintegra(){
-    return <h1>página do Sintegra</h1>
+import PageShell from '../../components/PageShell';
+
+export default function Sintegra() {
+  return <PageShell title="Sintegra" />;
 }

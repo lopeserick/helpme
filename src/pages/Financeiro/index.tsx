@@ -1,3 +1,5 @@
-export default function Financeiro(){
-    return <h1>página do financeiro</h1>
+import PageShell from '../../components/PageShell';
+
+export default function Financeiro() {
+  return <PageShell title="Financeiro" />;
 }

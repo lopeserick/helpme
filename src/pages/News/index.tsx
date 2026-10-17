@@ -1,3 +1,5 @@
-export default function News(){
-    return <h1> página o que há de novo</h1>
+import PageShell from '../../components/PageShell';
+
+export default function News() {
+  return <PageShell title="O que há de novo" />;
 }

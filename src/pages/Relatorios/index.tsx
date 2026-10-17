@@ -1,3 +1,5 @@
-export default function Relatorios(){
-    return <h1>página dos relatórios</h1>
+import PageShell from '../../components/PageShell';
+
+export default function Relatorios() {
+  return <PageShell title="Relatórios" />;
 }
