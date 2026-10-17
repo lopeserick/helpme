@@ -43,7 +43,9 @@ src/
 │   ├── CategoryCard/        # Linha de categoria (a linha inteira é um link)
 │   ├── CategoryIcon/        # Converte o nome do ícone em componente
 │   ├── Index/               # Lista "Rotinas mais acessadas"
-│   └── PageShell/           # Estrutura das páginas internas (voltar + título)
+│   ├── PageHeader/          # Faixa verde do topo (Home e páginas internas)
+│   ├── PageShell/           # Estrutura das páginas internas (voltar + título)
+│   └── RoutineTopics/       # Tópicos de rotina recolhíveis (texto e imagem)
 ├── pages/                   # Uma pasta por rota
 └── styles/
     ├── theme.css            # Todas as cores, raios e sombras (variáveis)
@@ -55,12 +57,12 @@ src/
 | Rota                | Página             | Estado               |
 | ------------------- | ------------------ | -------------------- |
 | `/`                 | Home               | Pronta               |
-| `/estoque`          | Gestão de Estoque  | Em construção        |
-| `/financeiro`       | Financeiro         | Em construção        |
-| `/sintegra`         | Sintegra           | Em construção        |
-| `/primeiros-passos` | Primeiros Passos   | Em construção        |
-| `/novidades`        | O que há de novo   | Em construção (sem link na Home) |
-| `/relatorios`       | Relatórios         | Em construção (sem link na Home) |
+| `/estoque`          | Gestão de Estoque  | Tópicos de exemplo   |
+| `/financeiro`       | Financeiro         | Tópicos de exemplo   |
+| `/sintegra`         | Sintegra           | Tópicos de exemplo   |
+| `/primeiros-passos` | Primeiros Passos   | Tópicos de exemplo   |
+| `/novidades`        | O que há de novo   | Tópicos de exemplo (sem link na Home) |
+| `/relatorios`       | Relatórios         | Tópicos de exemplo (sem link na Home) |
 | qualquer outra      | Página não encontrada | Pronta            |
 
 ## Como adicionar uma categoria
@@ -70,6 +72,20 @@ src/
    nome em `CategoryIconName` e o componente em `components/CategoryIcon`.
 2. Crie a página em `src/pages/<Nome>/index.tsx` usando `PageShell`.
 3. Registre a rota em `src/App.tsx`.
+
+## Como editar os tópicos de uma página
+
+Os tópicos ficam em `topicsByPage`, em `src/data/helpCenter.ts`, agrupados por
+página. Cada tópico tem `id`, `title` (o nome que aparece com ele fechado) e
+`content`, que é uma lista de blocos:
+
+```ts
+{ type: 'text', text: 'Um parágrafo.' }
+{ type: 'image', src: '/exemplos/tela.png', alt: 'O que a imagem mostra', caption: 'Opcional' }
+```
+
+As imagens ficam em `public/` e o `src` começa com `/`. O `alt` descreve a
+imagem para quem usa leitor de tela, então não deixe em branco.
 
 ## Tema
 
@@ -93,5 +109,7 @@ estados de carregamento e de erro.
   (Vite 5 / esbuild); corrigir exige subir o Vite de versão principal.
 - `tsconfig.app.json` não é referenciado por `tsconfig.json` (o build usa o
   `tsconfig.json`).
-- O nome aparece de três formas (Help Me, Help Center, "Suporte Rápido" no
-  título da aba) e o texto da Home cita "Acesse Brasil"; vale padronizar.
+- O nome do projeto aparece de três formas (Help Me, Help Center e "Suporte
+  Rápido" no título da aba); vale padronizar. O ERP se chama Acesse.
+- Os tópicos das páginas internas são textos de exemplo, para serem
+  substituídos pelo conteúdo real.

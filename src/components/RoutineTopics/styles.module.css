@@ -1,0 +1,90 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 820px;
+}
+
+.topic {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+/* Linha fechada: só o nome da rotina e a seta */
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  list-style: none;
+}
+
+/* Tira o triângulo padrão do navegador */
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary:hover {
+  background: var(--brand-50);
+}
+
+.summary:focus-visible {
+  outline-offset: -3px;
+}
+
+.title {
+  flex: 1;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.chevron {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--brand-700);
+  transition: transform 0.2s ease;
+}
+
+.topic[open] .summary {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.topic[open] .chevron {
+  transform: rotate(180deg);
+}
+
+/* Conteúdo aberto: espaço para textos e imagens */
+.content {
+  padding: 4px 20px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.content > * {
+  margin-top: 16px;
+}
+
+.content p {
+  max-width: 65ch;
+  color: var(--ink-muted);
+}
+
+.figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.figure figcaption {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
