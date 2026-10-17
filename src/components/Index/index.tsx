@@ -7,22 +7,35 @@ type Props = {
 
 export default function Index({ items, onItemClick }: Props) {
   return (
-    <section className={styles.container}>
+    <section>
       <h2 className={styles.title}>Rotinas mais acessadas</h2>
 
-      <ul className={styles.list}>
-        {items.map((item, i) => (
-          <li
-            key={i}
-            className={styles.item}
-            onClick={() => onItemClick?.(item, i)}
-          >
-            <span className={styles.badge}>{i + 1}</span>
+      <ol className={styles.list}>
+        {items.map((item, i) => {
+          const content = (
+            <>
+              <span className={styles.badge}>{i + 1}</span>
+              <span className={styles.text}>{item}</span>
+            </>
+          );
 
-            <span className={styles.text}>{item}</span>
-          </li>
-        ))}
-      </ul>
+          return (
+            <li key={item}>
+              {onItemClick ? (
+                <button
+                  type="button"
+                  className={`${styles.item} ${styles.clickable}`}
+                  onClick={() => onItemClick(item, i)}
+                >
+                  {content}
+                </button>
+              ) : (
+                <div className={styles.item}>{content}</div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
     </section>
   );
 }

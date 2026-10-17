@@ -10,23 +10,26 @@ export default function Home() {
     <>
       <Header />
 
-      <section className="container categories">
-        <h2>Categorias</h2>
+      <main className="container home">
+        <section>
+          <h2 className="home-heading">Categorias</h2>
 
-        <div className="grid">
-          {categories.map((category) => (
-            <CategoryCard
-              key={category.id}
-              title={category.title}
-              description={category.description}
-              icon={<CategoryIcon name={category.icon} />}
-              to={category.path}
-            />
-          ))}
-        </div>
-      </section>
+          <ul className="category-list">
+            {categories.map((category) => (
+              <li key={category.id}>
+                <CategoryCard
+                  title={category.title}
+                  description={category.description}
+                  icon={<CategoryIcon name={category.icon} />}
+                  to={category.path}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      <Index items={routines.map((routine) => routine.title)} />
+        <Index items={routines.map((routine) => routine.title)} />
+      </main>
     </>
   );
 }

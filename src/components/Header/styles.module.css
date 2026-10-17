@@ -1,44 +1,82 @@
 .header {
-  background: linear-gradient(95deg, var(--green-strong), var(--green-neutral));
-  padding: 80px 0;
-  color: var(--white);
+  position: relative;
+  overflow: hidden;
+  padding: clamp(48px, 8vw, 96px) 0 clamp(56px, 8vw, 104px);
+  background: var(--brand-900);
+  color: var(--paper);
+}
+
+/* Linhas de livro-razão: a grade é mais visível à direita e some perto do texto */
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: linear-gradient(to left, #000 5%, transparent 65%);
+  mask-image: linear-gradient(to left, #000 5%, transparent 65%);
+  pointer-events: none;
+}
+
+/* Mantém o conteúdo acima da grade */
+.inner {
+  position: relative;
 }
 
 .title {
-  font-size: 48px;
-  font-weight: bold;
-  margin-bottom: 12px;
+  font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  font-size: 18px;
-  opacity: 0.9;
-  margin-bottom: 32px;
-  color: var(--white);
+  max-width: 640px;
+  margin-top: 16px;
+  font-size: 1.125rem;
+  color: var(--brand-100);
 }
 
 .search {
   position: relative;
-  width: 100%;
-  max-width: 600px;
+  max-width: 640px;
+  margin-top: 32px;
 }
 
 .search input {
   width: 100%;
-  padding: 14px 16px 14px 44px; /* espaço pra esquerda pro ícone */
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
+  height: 56px;
+  padding: 0 20px 0 52px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.0625rem;
+  box-shadow: var(--shadow-search);
+}
+
+.search input::placeholder {
+  color: var(--ink-muted);
+}
+
+.search input:focus-visible {
+  outline: none;
+  border-color: var(--mark);
+  box-shadow:
+    0 0 0 4px rgb(212 242 106 / 0.35),
+    var(--shadow-search);
 }
 
 .icon {
   position: absolute;
-  right: 14px;
+  left: 18px;
   top: 50%;
+  width: 22px;
+  height: 22px;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  color: var(--dark-grey);
-  pointer-events: none; /* não bloqueia clique */
+  color: var(--brand-800);
+  pointer-events: none;
 }
-
