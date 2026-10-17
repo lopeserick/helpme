@@ -1,59 +1,63 @@
+/**
+ * Fonte única dos dados da central de ajuda.
+ *
+ * Os tipos abaixo descrevem o formato que a tela espera. Hoje os dados vivem
+ * neste arquivo; quando virarem API/CMS, basta devolver o mesmo formato
+ * (por exemplo, numa função `getCategories()`), sem mexer nos componentes.
+ * Por isso os valores são dados simples e serializáveis: nada de componentes
+ * React aqui (o ícone é um nome, resolvido em `components/CategoryIcon`).
+ */
+
+export type CategoryIconName = 'database' | 'dollar' | 'book' | 'star';
+
 export interface Category {
-  icon: string;
+  id: string;
   title: string;
   description: string;
-  articles: number;
-  color: 'blue' | 'green' | 'purple' | 'orange' | 'gray' | 'red';
+  /** Rota da página da categoria (ver `App.tsx`). */
+  path: string;
+  icon: CategoryIconName;
+}
+
+export interface Routine {
+  id: string;
+  title: string;
 }
 
 export const categories: Category[] = [
   {
-    icon: 'package',
-    title: "Gestão de Estoque",
-    description: "Aprenda a gerenciar produtos, entradas e saídas",
-    articles: 24,
-    color: "blue"
+    id: 'estoque',
+    title: 'Gestão de Estoque',
+    description: 'Gerencie produtos e movimentações',
+    path: '/estoque',
+    icon: 'database',
   },
   {
+    id: 'financeiro',
+    title: 'Financeiro',
+    description: 'Controle de contas e fluxo de caixa',
+    path: '/financeiro',
     icon: 'dollar',
-    title: "Financeiro",
-    description: "Contas a pagar, receber e fluxo de caixa",
-    articles: 18,
-    color: "green"
   },
   {
-    icon: 'users',
-    title: "Clientes e Vendas",
-    description: "Cadastros, pedidos e relacionamento",
-    articles: 31,
-    color: "purple"
-  },
-  {
-    icon: 'chart',
-    title: "Relatórios",
-    description: "Análises, dashboards e indicadores",
-    articles: 15,
-    color: "orange"
-  },
-  {
-    icon: 'settings',
-    title: "Configurações",
-    description: "Personalize o sistema conforme sua necessidade",
-    articles: 12,
-    color: "gray"
-  },
-  {
+    id: 'sintegra',
+    title: 'Sintegra',
+    description: 'Arquivos e Relatórios Fiscais',
+    path: '/sintegra',
     icon: 'book',
-    title: "Primeiros Passos",
-    description: "Guia completo para iniciantes",
-    articles: 8,
-    color: "red"
-  }
+  },
+  {
+    id: 'primeiros-passos',
+    title: 'Primeiros Passos',
+    description: 'Como realizar as rotinas básicas do Acesse Brasil',
+    path: '/primeiros-passos',
+    icon: 'star',
+  },
 ];
 
-export const popularArticles: string[] = [
-  "Como cadastrar um novo produto",
-  "Emitir nota fiscal eletrônica",
-  "Configurar formas de pagamento",
-  "Gerar relatório de vendas mensal"
+export const routines: Routine[] = [
+  { id: 'cadastrar-produto', title: 'Como cadastrar produto' },
+  { id: 'emitir-nota-fiscal', title: 'Emitir nota fiscal' },
+  { id: 'relatorio-mensal', title: 'Gerar relatório mensal' },
+  { id: 'formas-de-pagamento', title: 'Configurar formas de pagamento' },
 ];
