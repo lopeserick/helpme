@@ -10,8 +10,24 @@
 
 export type CategoryIconName = 'database' | 'dollar' | 'book' | 'star';
 
+/**
+ * Todas as páginas de conteúdo, inclusive as que não aparecem na lista de
+ * categorias da Home (`novidades` e `relatorios`). A busca usa esta lista
+ * para saber o nome e o endereço de cada página.
+ */
+export const pages = {
+  estoque: { title: 'Gestão de Estoque', path: '/estoque' },
+  financeiro: { title: 'Financeiro', path: '/financeiro' },
+  sintegra: { title: 'Sintegra', path: '/sintegra' },
+  'primeiros-passos': { title: 'Primeiros Passos', path: '/primeiros-passos' },
+  novidades: { title: 'O que há de novo', path: '/novidades' },
+  relatorios: { title: 'Relatórios', path: '/relatorios' },
+} satisfies Record<string, { title: string; path: string }>;
+
+export type PageKey = keyof typeof pages;
+
 export interface Category {
-  id: string;
+  id: PageKey;
   title: string;
   description: string;
   /** Rota da página da categoria (ver `App.tsx`). */
@@ -33,36 +49,37 @@ export interface Topic {
   id: string;
   /** Nome da rotina, exibido com o tópico fechado. */
   title: string;
+  /** Rótulo opcional antes do título, como "Validação fiscal". */
+  tag?: string;
+  /** Data opcional no formato AAAA-MM-DD, exibida ao lado do título. */
+  date?: string;
   content: TopicBlock[];
 }
 
+/** As categorias que aparecem na Home. */
 export const categories: Category[] = [
   {
     id: 'estoque',
-    title: 'Gestão de Estoque',
+    ...pages.estoque,
     description: 'Gerencie produtos e movimentações',
-    path: '/estoque',
     icon: 'database',
   },
   {
     id: 'financeiro',
-    title: 'Financeiro',
+    ...pages.financeiro,
     description: 'Controle de contas e fluxo de caixa',
-    path: '/financeiro',
     icon: 'dollar',
   },
   {
     id: 'sintegra',
-    title: 'Sintegra',
+    ...pages.sintegra,
     description: 'Arquivos e Relatórios Fiscais',
-    path: '/sintegra',
     icon: 'book',
   },
   {
     id: 'primeiros-passos',
-    title: 'Primeiros Passos',
+    ...pages['primeiros-passos'],
     description: 'Como realizar as rotinas básicas do Acesse',
-    path: '/primeiros-passos',
     icon: 'star',
   },
 ];
@@ -291,14 +308,57 @@ export const topicsByPage = {
       ],
     },
   ],
+  /**
+   * Avisos de implantação no ERP. Cada item vira um alerta na Home e um
+   * tópico nesta página. Para anunciar algo novo, acrescente um item no topo
+   * com `tag` ("Validação fiscal", "Rotina nova" ou "Programa novo") e `date`.
+   */
   novidades: [
     {
-      id: 'versao-atual',
-      title: 'O que mudou na versão mais recente',
+      id: 'validacao-cst-nfe',
+      tag: 'Validação fiscal',
+      date: '2026-10-14',
+      title: 'Nova validação de CST na emissão de NF-e',
       content: [
         {
           type: 'text',
-          text: 'Descreva aqui as mudanças da última versão, uma por parágrafo, começando pelo que afeta o dia a dia de quem usa.',
+          text: 'A emissão passa a recusar notas com CST incompatível com o regime tributário da empresa. Antes o erro só aparecia na rejeição da Sefaz.',
+        },
+        {
+          type: 'text',
+          text: 'Se a nota for recusada, confira o CST no cadastro do produto e a tributação do cliente antes de tentar de novo.',
+        },
+      ],
+    },
+    {
+      id: 'conferencia-por-leitor',
+      tag: 'Rotina nova',
+      date: '2026-10-06',
+      title: 'Conferência de recebimento por leitor de código de barras',
+      content: [
+        {
+          type: 'text',
+          text: 'Em Estoque > Entradas, a conferência agora aceita leitor de código de barras: cada bipe soma uma unidade no item correspondente.',
+        },
+        {
+          type: 'text',
+          text: 'A entrada só é concluída quando a contagem bate com a nota; as diferenças ficam registradas para consulta.',
+        },
+      ],
+    },
+    {
+      id: 'painel-de-pedidos',
+      tag: 'Programa novo',
+      date: '2026-09-29',
+      title: 'Painel de acompanhamento de pedidos no workspace',
+      content: [
+        {
+          type: 'text',
+          text: 'O painel mostra os pedidos em aberto por situação (separação, faturamento e entrega), atualizando sozinho.',
+        },
+        {
+          type: 'text',
+          text: 'O acesso é liberado por perfil de usuário, em Configurações > Usuários.',
         },
       ],
     },
@@ -325,4 +385,4 @@ export const topicsByPage = {
       ],
     },
   ],
-} satisfies Record<string, Topic[]>;
+} satisfies Record<PageKey, Topic[]>;
