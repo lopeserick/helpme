@@ -8,36 +8,58 @@ sem login — isso vem na fase 2.
 
 - Node 22 e TypeScript
 - Fastify 5
-- Drizzle ORM com PostgreSQL 16
+- Drizzle ORM com PostgreSQL 18
 - zod para validar o que entra
 
 ## Como rodar
 
-### 1. Subir o banco
+### 1. Instalar o PostgreSQL 18
 
-Na raiz do projeto (um nível acima desta pasta):
+No Windows, pelo PowerShell:
 
-```bash
-docker compose up -d
+```powershell
+winget install -e --id PostgreSQL.PostgreSQL.18
 ```
 
-Isso sobe um PostgreSQL 16 na porta 5432, com usuário, senha e banco
-`helpme`. Para conferir se está de pé: `docker compose ps`.
+Se o identificador não existir na sua máquina, rode `winget search postgresql`
+e use o que aparecer para a versão 18. O instalador da EnterpriseDB também
+serve: <https://www.postgresql.org/download/windows/>.
 
-> A versão no `docker-compose.yml` deve ser a mesma que roda no servidor da
-> empresa. Ajuste a tag quando essa informação estiver confirmada.
+Durante a instalação, o PostgreSQL pede uma senha para o usuário `postgres`.
+Guarde essa senha, ela é usada no passo seguinte.
 
-### 2. Configurar e instalar
+> A versão de desenvolvimento deve ser a mesma que roda no servidor da
+> empresa. Confirme isso e ajuste se for diferente.
 
-```bash
+Se o comando `psql` não for reconhecido depois da instalação, acrescente
+`C:\Program Files\PostgreSQL\18\bin` à variável de ambiente PATH, ou use o
+atalho "SQL Shell (psql)" que o instalador cria no menu Iniciar.
+
+### 2. Criar o banco e o usuário da aplicação
+
+```powershell
+psql -U postgres -c "CREATE USER helpme WITH PASSWORD 'helpme';"
+psql -U postgres -c "CREATE DATABASE helpme OWNER helpme;"
+```
+
+A aplicação se conecta com um usuário próprio, e não com o `postgres`. Mesmo
+em desenvolvimento, vale manter esse hábito: em produção, a API não deve
+rodar com um superusuário do banco.
+
+### 3. Configurar e instalar
+
+```powershell
 cd api
-cp .env.example .env
+copy .env.example .env
 npm install
 ```
 
-### 3. Criar as tabelas e carregar o conteúdo
+Abra o `.env` e confira a `DATABASE_URL`. Se você usou outra senha ou outra
+porta, ajuste ali.
 
-```bash
+### 4. Criar as tabelas e carregar o conteúdo
+
+```powershell
 npm run db:migrate   # cria as tabelas
 npm run seed         # carrega os módulos e tópicos iniciais
 ```
@@ -45,9 +67,9 @@ npm run seed         # carrega os módulos e tópicos iniciais
 O `seed` pode ser rodado quantas vezes quiser: ele insere ou atualiza pelo
 slug e não apaga nada que já esteja no banco.
 
-### 4. Subir a API
+### 5. Subir a API
 
-```bash
+```powershell
 npm run dev
 ```
 
@@ -117,6 +139,20 @@ api/
     └── lib/
         └── texto.ts      # Normalização usada pela busca
 ```
+
+## Problemas comuns
+
+**`psql` não é reconhecido como comando.** A pasta `bin` do PostgreSQL não
+está no PATH. Veja o passo 1.
+
+**`password authentication failed for user "helpme"`.** A senha no `.env` não
+bate com a que você definiu no passo 2.
+
+**`ECONNREFUSED` ao rodar a migração.** O serviço do PostgreSQL não está no
+ar. No PowerShell: `Get-Service postgresql*` mostra a situação, e
+`Start-Service postgresql-x64-18` o inicia.
+
+**`database "helpme" does not exist`.** Faltou o passo 2.
 
 ## Pendências
 
