@@ -1,0 +1,8 @@
+node_modules
+.env
+dist
+
+# Imagens enviadas pelo painel não entram no repositório.
+# A exceção é a imagem de exemplo usada pelo conteúdo inicial.
+uploads/*
+!uploads/tela-exemplo.svg
