@@ -256,6 +256,32 @@ Cada fase é demonstrável sozinha.
 As fases 2 e 3 podem virar uma só, se preferir mostrar o fluxo completo de
 uma vez.
 
+## Onde paramos
+
+Atualizado em 19/10/2026.
+
+**Contexto.** O ERP Acesse é feito em Delphi, então a equipe não tem prática
+com desenvolvimento web — por isso a escolha de Node não briga com a casa,
+mas a manutenção do projeto fica concentrada em quem o construir. O destino é
+a VM Windows Server da empresa, com PostgreSQL.
+
+**Pronto e no ar:**
+
+| Branch | O que tem |
+| --- | --- |
+| `chore/estabilizacao-fase-1` | Front-end: correções, visual, tópicos recolhíveis, alerta de novidades e busca |
+| `feat/api-fase-1` | Esta branch: a API de leitura, saindo da anterior |
+
+**A fase 1 está pela metade.** A API está funcionando com o conteúdo no banco;
+falta o site deixar de ler `src/data/helpCenter.ts` e passar a consumir a API,
+com estados de carregando e erro. Esse é o próximo passo e não depende de
+nenhuma resposta externa.
+
+**Ambiente de desenvolvimento conferido** (Windows): PostgreSQL 18 instalado
+pelo winget, banco `helpme` criado, API respondendo em `localhost:3000`. Em
+desenvolvimento a conexão usa o superusuário `postgres`; em produção isso
+precisa virar um usuário próprio da aplicação.
+
 ## Pontos em aberto
 
 - Confirmar que a VM é mesmo Windows Server 2019.
