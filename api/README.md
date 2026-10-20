@@ -80,7 +80,8 @@ npm run dev
 ```
 
 Confira em <http://localhost:3000/api/saude>, que deve responder
-`{"ok":true}`.
+`{"ok":true,"banco":"ok"}`. Para uma conferência completa, com a API no ar,
+rode `npm run teste:api` em outro terminal.
 
 ## Comandos
 
@@ -89,6 +90,7 @@ Confira em <http://localhost:3000/api/saude>, que deve responder
 | `npm run dev` | Sobe a API recarregando a cada alteração |
 | `npm start` | Sobe a API uma vez |
 | `npm run check` | Confere os tipos |
+| `npm run teste:api` | Testa a API no ar: saúde, rotas, erros, CORS e imagens (`API_URL` muda o endereço) |
 | `npm run db:generate` | Gera a migração depois de mudar `src/db/schema.ts` |
 | `npm run db:migrate` | Aplica as migrações pendentes |
 | `npm run seed` | Carrega o conteúdo inicial |
@@ -99,7 +101,7 @@ Todas públicas nesta fase. Nenhuma devolve rascunho nem tópico excluído.
 
 | Rota | Devolve |
 | --- | --- |
-| `GET /api/saude` | `{ ok: true }`, para conferir se a API está no ar |
+| `GET /api/saude` | `{ ok: true, banco: 'ok' }`; **503** se o banco não responder |
 | `GET /api/modulos` | Módulos visíveis, para a lista de categorias da Home |
 | `GET /api/modulos/:slug` | Um módulo e seus tópicos publicados, com os blocos |
 | `GET /api/novidades?limite=5` | Avisos mais recentes, para o alerta da Home |

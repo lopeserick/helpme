@@ -4,6 +4,7 @@ import cors from '@fastify/cors';
 import estaticos from '@fastify/static';
 import { ZodError } from 'zod';
 import { env } from './env.js';
+import { conexao } from './db/index.js';
 import { rotasPublicas } from './rotas/publico.js';
 
 const app = Fastify({ logger: true });
@@ -41,7 +42,19 @@ app.setErrorHandler((erro, _requisicao, resposta) => {
   return resposta.code(status).send({ erro: 'erro interno' });
 });
 
-app.get('/api/saude', async () => ({ ok: true }));
+/**
+ * Confere a API e o banco. Responde 503 quando o banco não atende, para que
+ * quem monitora (ou o próprio site) saiba que a API está de pé mas sem dados.
+ */
+app.get('/api/saude', async (_requisicao, resposta) => {
+  try {
+    await conexao`select 1`;
+    return { ok: true, banco: 'ok' };
+  } catch (erro) {
+    app.log.error(erro, 'falha ao consultar o banco');
+    return resposta.code(503).send({ ok: false, banco: 'indisponível' });
+  }
+});
 
 await app.register(rotasPublicas);
 
