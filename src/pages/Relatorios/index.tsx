@@ -1,6 +1,5 @@
 import PageShell from '../../components/PageShell';
-import RoutineTopics from '../../components/RoutineTopics';
-import { topicsByPage } from '../../data/helpCenter';
+import ModuleTopics from '../../components/ModuleTopics';
 
 export default function Relatorios() {
   return (
@@ -8,7 +7,7 @@ export default function Relatorios() {
       title="Relatórios"
       description="Vendas, curva ABC e demais análises do sistema."
     >
-      <RoutineTopics topics={topicsByPage.relatorios} />
+      <ModuleTopics slug="relatorios" />
     </PageShell>
   );
 }

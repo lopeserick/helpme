@@ -1,6 +1,5 @@
 import PageShell from '../../components/PageShell';
-import RoutineTopics from '../../components/RoutineTopics';
-import { topicsByPage } from '../../data/helpCenter';
+import ModuleTopics from '../../components/ModuleTopics';
 
 export default function Sintegra() {
   return (
@@ -8,7 +7,7 @@ export default function Sintegra() {
       title="Sintegra"
       description="Geração, validação e correção do arquivo fiscal."
     >
-      <RoutineTopics topics={topicsByPage.sintegra} />
+      <ModuleTopics slug="sintegra" />
     </PageShell>
   );
 }

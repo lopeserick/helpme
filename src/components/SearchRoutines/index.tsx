@@ -1,42 +1,17 @@
-import { useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { pages, topicsByPage, type PageKey } from '../../data/helpCenter';
+import { getJson } from '../../api/client';
+import { parseSearch, type BuscaResposta, type SearchHit } from '../../api/helpCenter';
 import styles from './styles.module.css';
 
-type Suggestion = {
-  /** Chave única na lista de sugestões: página + tópico. */
-  key: string;
-  /** Nome da rotina. */
-  title: string;
-  /** Nome da página onde a rotina está, mostrado como contexto. */
-  pageTitle: string;
-  /** Endereço com o tópico em destaque, por exemplo /estoque#inventario. */
-  to: string;
-};
-
 const MAX_SUGGESTIONS = 6;
+/** Espera a pessoa parar de digitar antes de consultar a API. */
+const DEBOUNCE_MS = 250;
+const MIN_CHARS = 2;
 
-/** Tira acentos e caixa, para "fiscal" encontrar "Fiscal" e "sintegra", "Sintegra". */
-function normalize(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim();
-}
-
-/** Monta a lista de rotinas pesquisáveis a partir dos dados da central. */
-function buildIndex(): Suggestion[] {
-  return (Object.keys(topicsByPage) as PageKey[]).flatMap((pageKey) =>
-    topicsByPage[pageKey].map((topic) => ({
-      key: `${pageKey}:${topic.id}`,
-      title: topic.title,
-      pageTitle: pages[pageKey].title,
-      to: `${pages[pageKey].path}#${topic.id}`,
-    })),
-  );
-}
+/** Resposta da busca, guardada junto do termo a que pertence. */
+type Result = { term: string; hits: SearchHit[]; failed: boolean };
 
 export default function SearchRoutines() {
   const navigate = useNavigate();
@@ -47,24 +22,41 @@ export default function SearchRoutines() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
 
-  const index = useMemo(() => buildIndex(), []);
+  const term = query.trim();
+  const [result, setResult] = useState<Result | null>(null);
 
-  const suggestions = useMemo(() => {
-    const term = normalize(query);
-    if (term.length < 2) return [];
+  useEffect(() => {
+    if (term.length < MIN_CHARS) return;
 
-    return index
-      .filter(
-        (item) =>
-          normalize(item.title).includes(term) ||
-          normalize(item.pageTitle).includes(term),
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      getJson<BuscaResposta>(
+        `/api/busca?q=${encodeURIComponent(term)}&limite=${MAX_SUGGESTIONS}`,
+        controller.signal,
       )
-      .slice(0, MAX_SUGGESTIONS);
-  }, [index, query]);
+        .then((raw) => setResult({ term, hits: parseSearch(raw), failed: false }))
+        .catch(() => {
+          if (!controller.signal.aborted) {
+            setResult({ term, hits: [], failed: true });
+          }
+        });
+    }, DEBOUNCE_MS);
 
-  const showList = open && query.trim().length >= 2;
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [term]);
 
-  function select(suggestion: Suggestion) {
+  // Resposta de um termo anterior não vale: enquanto não chega a do termo
+  // atual, a lista mostra "Buscando…".
+  const current = result?.term === term ? result : null;
+  const suggestions = current?.hits ?? [];
+  const searching = current === null;
+
+  const showList = open && term.length >= MIN_CHARS;
+
+  function select(suggestion: SearchHit) {
     setOpen(false);
     setQuery('');
     inputRef.current?.blur();
@@ -131,9 +123,17 @@ export default function SearchRoutines() {
 
       {showList && (
         <ul className={styles.list} id={listId} role="listbox">
-          {suggestions.length === 0 ? (
+          {searching ? (
+            <li className={styles.empty} role="status">
+              Buscando…
+            </li>
+          ) : current.failed ? (
+            <li className={styles.empty} role="alert">
+              Não foi possível buscar agora. Tente de novo em instantes.
+            </li>
+          ) : suggestions.length === 0 ? (
             <li className={styles.empty}>
-              Nenhuma rotina encontrada para “{query.trim()}”.
+              Nenhuma rotina encontrada para “{term}”.
             </li>
           ) : (
             suggestions.map((suggestion, i) => (

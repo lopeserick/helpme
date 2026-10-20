@@ -1,8 +1,9 @@
 # Help Me — central de ajuda
 
 Central de ajuda para o ERP (estoque, financeiro, fiscal/Sintegra), feita para
-mostrar a ideia à empresa. Hoje é um front-end com dados dentro do código; a
-estrutura já está pronta para trocar esses dados por uma API ou CMS depois.
+mostrar a ideia à empresa. O site lê o conteúdo (categorias, tópicos, novidades
+e busca) da API que fica em [`api/`](api/README.md); não há mais conteúdo dentro
+do código do site.
 
 ## Tecnologias
 
@@ -17,12 +18,25 @@ Testado com Node 22.
 
 ## Como rodar
 
+O site precisa da API no ar. Com o PostgreSQL e a API configurados (passo a
+passo em [`api/README.md`](api/README.md)), abra dois terminais:
+
 ```bash
-npm install
+# Terminal 1: API em http://localhost:3000
+cd api
+npm run dev
+
+# Terminal 2: site
+npm ci
 npm run dev
 ```
 
-O Vite abre `http://localhost:3000` automaticamente.
+O Vite abre `http://localhost:5173` e repassa `/api` e `/uploads` para a API em
+`localhost:3000` (veja `vite.config.ts`). Se a API estiver em outro endereço,
+crie um arquivo `.env.local` com `VITE_API_URL=http://servidor:3000`.
+
+Com a API fora do ar, a Home e as páginas mostram uma mensagem de erro com o
+botão "Tentar de novo".
 
 | Comando           | O que faz                                      |
 | ----------------- | ---------------------------------------------- |
@@ -37,12 +51,17 @@ O Vite abre `http://localhost:3000` automaticamente.
 src/
 ├── App.tsx                  # Rotas
 ├── main.tsx                 # Entrada: fonte, tema e estilos globais
-├── data/helpCenter.ts       # Categorias e rotinas (fonte única dos dados)
+├── api/
+│   ├── client.ts            # Chamada à API, erros com texto amigável
+│   ├── helpCenter.ts        # Tipos da tela e conversão da resposta da API
+│   └── useApi.ts            # Hook: carregando, erro e "tentar de novo"
 ├── components/
+│   ├── AsyncContent/        # Estados de carregando, erro e vazio
 │   ├── Header/              # Topo com título e campo de busca
 │   ├── CategoryCard/        # Linha de categoria (a linha inteira é um link)
 │   ├── CategoryIcon/        # Converte o nome do ícone em componente
 │   ├── Index/               # Lista "Rotinas mais acessadas"
+│   ├── ModuleTopics/        # Busca os tópicos de um módulo e os exibe
 │   ├── NewsAlert/           # Alerta de novidades do ERP, na Home
 │   ├── PageHeader/          # Faixa verde do topo (Home e páginas internas)
 │   ├── PageShell/           # Estrutura das páginas internas (voltar + título)
@@ -59,74 +78,57 @@ src/
 | Rota                | Página             | Estado               |
 | ------------------- | ------------------ | -------------------- |
 | `/`                 | Home               | Pronta               |
-| `/estoque`          | Gestão de Estoque  | Tópicos de exemplo   |
-| `/financeiro`       | Financeiro         | Tópicos de exemplo   |
-| `/sintegra`         | Sintegra           | Tópicos de exemplo   |
-| `/primeiros-passos` | Primeiros Passos   | Tópicos de exemplo   |
+| `/estoque`          | Gestão de Estoque  | Tópicos da API       |
+| `/financeiro`       | Financeiro         | Tópicos da API       |
+| `/sintegra`         | Sintegra           | Tópicos da API       |
+| `/primeiros-passos` | Primeiros Passos   | Tópicos da API       |
 | `/novidades`        | O que há de novo   | Acessível pelo alerta da Home |
-| `/relatorios`       | Relatórios         | Tópicos de exemplo (sem link na Home) |
+| `/relatorios`       | Relatórios         | Tópicos da API (sem link na Home) |
 | qualquer outra      | Página não encontrada | Pronta            |
 
-## Como adicionar uma categoria
+## Onde o conteúdo é cadastrado
 
-1. Em `src/data/helpCenter.ts`, inclua um item em `categories` (`id`, `title`,
-   `description`, `path` e `icon`). Se precisar de um ícone novo, acrescente o
-   nome em `CategoryIconName` e o componente em `components/CategoryIcon`.
-2. Crie a página em `src/pages/<Nome>/index.tsx` usando `PageShell`.
-3. Registre a rota em `src/App.tsx`.
+O site só exibe. Módulos, tópicos, imagens e avisos vêm do banco, pela API, e
+por enquanto entram pelo `seed` (`api/src/db/conteudo-inicial.json`); o painel
+de edição é a fase 2 (veja `docs/arquitetura.md`).
 
-## Como editar os tópicos de uma página
-
-Os tópicos ficam em `topicsByPage`, em `src/data/helpCenter.ts`, agrupados por
-página. Cada tópico tem `id`, `title` (o nome que aparece com ele fechado) e
-`content`, que é uma lista de blocos:
-
-```ts
-{ type: 'text', text: 'Um parágrafo.' }
-{ type: 'image', src: '/exemplos/tela.png', alt: 'O que a imagem mostra', caption: 'Opcional' }
-```
-
-As imagens ficam em `public/` e o `src` começa com `/`. O `alt` descreve a
-imagem para quem usa leitor de tela, então não deixe em branco.
+- **Categoria da Home:** é um módulo visível na API. O `icone` precisa ser um
+  dos nomes de `components/CategoryIcon` (`database`, `dollar`, `book`,
+  `star`); um nome desconhecido cai no ícone de livro.
+- **Página de um módulo:** crie `src/pages/<Nome>/index.tsx` com `PageShell` e
+  `<ModuleTopics slug="<slug-do-modulo>" />`, e registre a rota em
+  `src/App.tsx`. O caminho da página precisa ser igual ao slug do módulo
+  (`/estoque` ↔ `estoque`), porque a busca e o alerta montam os links assim.
+- **Tópico:** lista de blocos de texto e imagem. O `alt` das imagens é
+  obrigatório na API, porque descreve a imagem para leitor de tela.
 
 ## Avisos de novidades do ERP
 
-Cada item de `topicsByPage.novidades` é um aviso de implantação no Acesse:
-rotina nova, programa novo ou validação fiscal. O mais recente vira o alerta
-da Home (`components/NewsAlert`), que é o caminho até `/novidades` — essa
-página não aparece na lista de categorias.
-
-Para anunciar algo, acrescente um item com `tag` ("Rotina nova", "Programa
-novo" ou "Validação fiscal") e `date` no formato `AAAA-MM-DD`. O alerta
-escolhe sozinho o aviso de data mais recente. Sem nenhum item na lista, o
-alerta não aparece.
+Os avisos são os tópicos do módulo `novidades`, que não aparece na lista de
+categorias. O mais recente vira o alerta da Home (`components/NewsAlert`), que
+é o caminho até `/novidades`. A data exibida é a de publicação. Sem nenhum
+aviso publicado, o alerta não aparece; se a API falhar, ele some sem atrapalhar
+o resto da Home.
 
 ## Busca
 
-A busca da Home procura pelo nome da rotina e pelo nome da página, ignorando
-acentos e maiúsculas, a partir de duas letras digitadas. Ao escolher uma
+A busca da Home consulta `GET /api/busca` a partir de duas letras digitadas,
+esperando 250 ms depois da última tecla. Procura no nome da rotina, no texto
+dos tópicos e no nome da página, ignorando acentos e maiúsculas. Ao escolher uma
 sugestão, a pessoa vai para a página com o id do tópico no endereço
 (`/estoque#inventario`); `RoutineTopics` lê esse id, abre o tópico e o destaca
-por alguns segundos. Isso significa que qualquer endereço nesse formato pode
-ser compartilhado e abre direto no tópico certo.
+por alguns segundos. Qualquer endereço nesse formato pode ser compartilhado e
+abre direto no tópico certo.
 
 ## Tema
 
 Toda cor, raio e sombra vem de `src/styles/theme.css`. Se uma variável não
 existe nesse arquivo, ela não deve ser usada nos componentes.
 
-## Do código para uma API
-
-Os tipos `Category` e `Routine` em `src/data/helpCenter.ts` são o contrato da
-tela e só contêm dados simples (o ícone é um nome, não um componente). Quando os
-dados vierem de um servidor ou CMS, mantenha esses tipos, troque o import da
-Home por uma função assíncrona (por exemplo, `getCategories()`) e acrescente
-estados de carregamento e de erro.
-
 ## Pendências conhecidas
 
-- A busca do topo é só visual: digitar não filtra nada.
-- As páginas de categoria ainda não têm artigos.
+- "Rotinas mais acessadas" (Home) ainda é uma lista fixa no código: a API não
+  registra acessos.
 - Não há testes automatizados nem integração contínua.
 - `npm audit` aponta 2 avisos que afetam apenas o servidor de desenvolvimento
   (Vite 5 / esbuild); corrigir exige subir o Vite de versão principal.
@@ -134,5 +136,4 @@ estados de carregamento e de erro.
   `tsconfig.json`).
 - O nome do projeto aparece de três formas (Help Me, Help Center e "Suporte
   Rápido" no título da aba); vale padronizar. O ERP se chama Acesse.
-- Os tópicos das páginas internas são textos de exemplo, para serem
-  substituídos pelo conteúdo real.
+- O conteúdo no banco ainda é de exemplo, para ser substituído pelo real.

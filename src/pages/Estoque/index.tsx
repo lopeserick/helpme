@@ -1,6 +1,5 @@
 import PageShell from '../../components/PageShell';
-import RoutineTopics from '../../components/RoutineTopics';
-import { topicsByPage } from '../../data/helpCenter';
+import ModuleTopics from '../../components/ModuleTopics';
 
 export default function Estoque() {
   return (
@@ -8,7 +7,7 @@ export default function Estoque() {
       title="Gestão de Estoque"
       description="Produtos, entradas, inventário e transferências entre filiais."
     >
-      <RoutineTopics topics={topicsByPage.estoque} />
+      <ModuleTopics slug="estoque" />
     </PageShell>
   );
 }

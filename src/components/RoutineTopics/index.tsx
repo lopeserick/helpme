@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
-import type { Topic } from '../../data/helpCenter';
+import type { Topic } from '../../api/helpCenter';
 import styles from './styles.module.css';
 
 type Props = {

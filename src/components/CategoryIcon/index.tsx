@@ -5,9 +5,9 @@ import {
   Database,
   type LucideIcon,
 } from 'lucide-react';
-import type { CategoryIconName } from '../../data/helpCenter';
 
-const icons: Record<CategoryIconName, LucideIcon> = {
+/** Nomes de ícone que a API pode devolver em `icone`. */
+const icons: Record<string, LucideIcon> = {
   database: Database,
   dollar: CircleDollarSign,
   book: BookOpenText,
@@ -15,10 +15,11 @@ const icons: Record<CategoryIconName, LucideIcon> = {
 };
 
 type Props = {
-  name: CategoryIconName;
+  name: string;
 };
 
+/** Um nome que não esteja na lista cai no ícone de livro, em vez de quebrar a tela. */
 export default function CategoryIcon({ name }: Props) {
-  const Icon = icons[name];
+  const Icon = icons[name] ?? BookOpenText;
   return <Icon aria-hidden="true" />;
 }

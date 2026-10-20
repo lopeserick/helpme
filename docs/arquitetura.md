@@ -214,9 +214,9 @@ A estrutura de pastas se mantém. O padrão
 
 | Hoje | Depois |
 | --- | --- |
-| `src/data/helpCenter.ts` com os dados | `src/types/helpCenter.ts` só com os tipos |
-| — | `src/api/` com `client.ts` e as funções de busca |
-| Páginas leem direto do arquivo | Páginas com três estados: carregando, erro e conteúdo |
+| `src/data/helpCenter.ts` com os dados | `src/api/helpCenter.ts` só com os tipos e a conversão da resposta (feito) |
+| — | `src/api/` com `client.ts` e o hook `useApi` (feito) |
+| Páginas leem direto do arquivo | Páginas com três estados: carregando, erro e conteúdo (feito) |
 | — | `src/pages/Admin/` com as telas do painel |
 | Componentes | Sem alteração |
 
@@ -258,7 +258,7 @@ uma vez.
 
 ## Onde paramos
 
-Atualizado em 19/10/2026.
+Atualizado em 20/10/2026.
 
 **Contexto.** O ERP Acesse é feito em Delphi, então a equipe não tem prática
 com desenvolvimento web — por isso a escolha de Node não briga com a casa,
@@ -270,12 +270,16 @@ a VM Windows Server da empresa, com PostgreSQL.
 | Branch | O que tem |
 | --- | --- |
 | `chore/estabilizacao-fase-1` | Front-end: correções, visual, tópicos recolhíveis, alerta de novidades e busca |
-| `feat/api-fase-1` | Esta branch: a API de leitura, saindo da anterior |
+| `feat/api-fase-1` | Esta branch: a API de leitura e o site consumindo a API, saindo da anterior |
 
-**A fase 1 está pela metade.** A API está funcionando com o conteúdo no banco;
-falta o site deixar de ler `src/data/helpCenter.ts` e passar a consumir a API,
-com estados de carregando e erro. Esse é o próximo passo e não depende de
-nenhuma resposta externa.
+**A fase 1 está feita, falta validar no seu ambiente.** A API funciona com o
+conteúdo no banco e o site passou a consumi-la (`src/api/`): a Home, as páginas
+de módulo, as novidades e a busca leem da API, com estados de carregando e de
+erro. `src/data/helpCenter.ts` foi removido. Foi conferido na nuvem com um
+PostgreSQL de teste; falta o teste no Windows (`git pull`, subir API e site).
+A única coisa ainda fixa no código é "Rotinas mais acessadas", porque a API não
+registra acessos. O próximo passo é a fase 2 (painel e login), que depende dos
+pontos em aberto abaixo.
 
 **Ambiente de desenvolvimento conferido** (Windows): PostgreSQL 18 instalado
 pelo winget, banco `helpme` criado, API respondendo em `localhost:3000`. Em

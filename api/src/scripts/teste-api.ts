@@ -41,7 +41,7 @@ async function buscar(caminho: string, init?: RequestInit) {
   return resposta;
 }
 
-async function json<T = any>(caminho: string, statusEsperado = 200): Promise<T> {
+async function json<T = unknown>(caminho: string, statusEsperado = 200): Promise<T> {
   const resposta = await buscar(caminho);
   esperar(
     resposta.status === statusEsperado,
@@ -57,15 +57,32 @@ await verificar('saúde: API e banco respondem', async () => {
   esperar(corpo.ok === true && corpo.banco === 'ok', 'saúde não informou banco ok');
 });
 
-let modulos: { slug: string; [campo: string]: unknown }[] = [];
+interface Modulo {
+  slug: string;
+  titulo: string;
+  descricao: string;
+  icone: string;
+}
+
+interface Bloco {
+  tipo: string;
+  url?: string;
+}
+
+interface Topico {
+  slug: string;
+  blocos: Bloco[];
+}
+
+let modulos: Modulo[] = [];
 
 await verificar('módulos: lista não vazia, com os campos da Home', async () => {
-  const corpo = await json<{ modulos: any[] }>('/api/modulos');
+  const corpo = await json<{ modulos: Modulo[] }>('/api/modulos');
   modulos = corpo.modulos;
   esperar(modulos.length > 0, 'nenhum módulo devolvido (rodou o seed?)');
   for (const m of modulos) {
     esperar(
-      ['slug', 'titulo', 'descricao', 'icone'].every((c) => typeof m[c] === 'string'),
+      [m.slug, m.titulo, m.descricao, m.icone].every((c) => typeof c === 'string'),
       `módulo ${m.slug ?? '?'} sem algum dos campos slug/titulo/descricao/icone`,
     );
   }
@@ -76,26 +93,26 @@ const urlsDeImagem = new Set<string>();
 await verificar('cada módulo abre com tópicos e blocos válidos', async () => {
   esperar(modulos.length > 0, 'sem módulos para testar');
   for (const { slug } of modulos) {
-    const corpo = await json<{ modulo: any; topicos: any[] }>(`/api/modulos/${slug}`);
+    const corpo = await json<{ modulo: Modulo; topicos: Topico[] }>(`/api/modulos/${slug}`);
     esperar(corpo.modulo.slug === slug, `módulo ${slug} devolveu outro slug`);
     for (const t of corpo.topicos) {
       esperar(Array.isArray(t.blocos), `tópico ${t.slug} sem lista de blocos`);
       for (const b of t.blocos) {
         esperar(b.tipo === 'texto' || b.tipo === 'imagem', `bloco de tipo ${b.tipo}`);
-        if (b.tipo === 'imagem') urlsDeImagem.add(b.url);
+        if (b.tipo === 'imagem' && b.url) urlsDeImagem.add(b.url);
       }
     }
   }
 });
 
 await verificar('novidades: devolve a lista e respeita o limite', async () => {
-  const corpo = await json<{ novidades: any[] }>('/api/novidades?limite=2');
+  const corpo = await json<{ novidades: unknown[] }>('/api/novidades?limite=2');
   esperar(Array.isArray(corpo.novidades), 'novidades não é uma lista');
   esperar(corpo.novidades.length <= 2, 'limite=2 devolveu mais de 2 itens');
 });
 
 await verificar('busca: acha resultado ignorando acento e caixa', async () => {
-  const corpo = await json<{ resultados: any[] }>('/api/busca?q=RELATORIO');
+  const corpo = await json<{ resultados: unknown[] }>('/api/busca?q=RELATORIO');
   esperar(corpo.resultados.length > 0, 'busca por "RELATORIO" não achou nada');
 });
 

@@ -1,6 +1,5 @@
 import PageShell from '../../components/PageShell';
-import RoutineTopics from '../../components/RoutineTopics';
-import { topicsByPage } from '../../data/helpCenter';
+import ModuleTopics from '../../components/ModuleTopics';
 
 export default function Financeiro() {
   return (
@@ -8,7 +7,7 @@ export default function Financeiro() {
       title="Financeiro"
       description="Contas a pagar, baixa de títulos, conciliação e fluxo de caixa."
     >
-      <RoutineTopics topics={topicsByPage.financeiro} />
+      <ModuleTopics slug="financeiro" />
     </PageShell>
   );
 }

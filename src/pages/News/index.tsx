@@ -1,6 +1,5 @@
 import PageShell from '../../components/PageShell';
-import RoutineTopics from '../../components/RoutineTopics';
-import { topicsByPage } from '../../data/helpCenter';
+import ModuleTopics from '../../components/ModuleTopics';
 
 /**
  * Página de novidades do ERP. Não aparece na lista de categorias: o caminho
@@ -12,7 +11,7 @@ export default function News() {
       title="O que há de novo"
       description="Rotinas, programas e validações fiscais implantados no Acesse, do mais recente para o mais antigo."
     >
-      <RoutineTopics topics={topicsByPage.novidades} />
+      <ModuleTopics slug="novidades" />
     </PageShell>
   );
 }
