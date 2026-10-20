@@ -51,8 +51,14 @@ rodar com um superusuário do banco.
 ```powershell
 cd api
 copy .env.example .env
-npm install
+npm ci
 ```
+
+Use `npm ci`, e não `npm install`. O `ci` instala exatamente o que está no
+`package-lock.json` e não reescreve esse arquivo; o `install` reescreve, e aí
+o próximo `git pull` falha dizendo que suas alterações locais seriam
+sobrescritas. Só use `npm install` quando a intenção for mesmo acrescentar ou
+atualizar uma dependência.
 
 Abra o `.env` e confira a `DATABASE_URL`. Se você usou outra senha ou outra
 porta, ajuste ali.
@@ -153,6 +159,15 @@ ar. No PowerShell: `Get-Service postgresql*` mostra a situação, e
 `Start-Service postgresql-x64-18` o inicia.
 
 **`database "helpme" does not exist`.** Faltou o passo 2.
+
+**`git pull` diz que `api/package-lock.json` seria sobrescrito.** Algum
+`npm install` reescreveu o arquivo. Como ele é gerado, dá para descartar a
+versão local sem perder nada:
+
+```powershell
+git restore api/package-lock.json
+git pull
+```
 
 ## Pendências
 
