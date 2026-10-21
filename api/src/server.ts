@@ -1,12 +1,13 @@
-import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import estaticos from '@fastify/static';
 import { ZodError } from 'zod';
 import { env } from './env.js';
 import { conexao } from './db/index.js';
+import { garantirPastaDeUploads, TAMANHO_MAXIMO_BYTES } from './lib/uploads.js';
 import { rotasAdmin } from './rotas/admin.js';
 import { rotasAuth } from './rotas/auth.js';
 import { rotasPublicas } from './rotas/publico.js';
@@ -27,13 +28,21 @@ await app.register(rateLimit, {
   }),
 });
 
+// Envio de arquivos (só o painel usa): uma imagem por vez, com limite de tamanho.
+await app.register(multipart, {
+  limits: { fileSize: TAMANHO_MAXIMO_BYTES, files: 1, fields: 5 },
+});
+
 /**
  * Em desenvolvimento a própria API serve as imagens. Em produção quem faz
  * isso é o IIS, direto da pasta — é mais rápido e tira carga do Node.
+ * Os nomes são ids únicos, então o navegador pode guardar a imagem em cache.
  */
+await garantirPastaDeUploads();
 await app.register(estaticos, {
-  root: fileURLToPath(new URL('../uploads', import.meta.url)),
+  root: env.uploadsDir,
   prefix: '/uploads/',
+  maxAge: '1d',
 });
 
 /** Entrada fora do formato vira 400 com a lista de problemas, não 500. */
@@ -59,6 +68,9 @@ app.setErrorHandler((erro, _requisicao, resposta) => {
   if (status === 429) {
     const { message } = erro as { message?: string };
     return resposta.code(429).send({ erro: message ?? 'Muitas tentativas. Tente de novo em instantes.' });
+  }
+  if (status === 413) {
+    return resposta.code(413).send({ erro: 'O arquivo é grande demais.' });
   }
   if (status < 500) {
     return resposta.code(status).send({ erro: 'requisição inválida' });

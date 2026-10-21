@@ -2,6 +2,8 @@
 // num parâmetro de linha de comando, para valer em toda entrada da aplicação:
 // servidor, seed e qualquer script futuro.
 import 'dotenv/config';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 
 /**
@@ -21,6 +23,12 @@ const schema = z.object({
    * ele definido o cadastro fica desligado: nunca é aberto a qualquer um.
    */
   CODIGO_CADASTRO: z.string().trim().min(6, 'use ao menos 6 caracteres').optional(),
+  /**
+   * Pasta onde ficam as imagens enviadas pelo painel. Em produção, use um caminho
+   * absoluto fora do código (ex.: D:\\helpme\\uploads) e inclua no backup. Vazio:
+   * usa a pasta `uploads` dentro de `api/`.
+   */
+  UPLOADS_DIR: z.string().trim().min(1).optional(),
   /** Quanto tempo a pessoa fica logada, em horas. */
   SESSAO_HORAS: z.coerce.number().positive().default(12),
   /** Ligue (true) quando o site for servido por HTTPS: o cookie só viaja criptografado. */
@@ -41,5 +49,8 @@ if (!resultado.success) {
 
 export const env = {
   ...resultado.data,
+  uploadsDir: resultado.data.UPLOADS_DIR
+    ? resolve(resultado.data.UPLOADS_DIR)
+    : fileURLToPath(new URL('../uploads', import.meta.url)),
   corsOrigins: resultado.data.CORS_ORIGINS.split(',').map((o) => o.trim()),
 };

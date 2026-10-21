@@ -1,14 +1,17 @@
-import { useEffect, useState, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, EyeOff, ImagePlus, Plus, Trash2 } from 'lucide-react';
 import AdminShell from '../../../components/AdminShell';
 import RoutineTopics from '../../../components/RoutineTopics';
 import {
   criarTopico,
   despublicarTopico,
+  enviarImagem,
   excluirTopico,
   publicarTopico,
   salvarTopico,
+  TAMANHO_MAXIMO_IMAGEM,
+  TIPOS_DE_IMAGEM,
   type BlocoAdmin,
   type ModuloResumo,
   type TopicoCompleto,
@@ -79,6 +82,7 @@ export default function EditorForm({ topico: inicial, modulos }: Props) {
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(avisoInicial);
   const [previa, setPrevia] = useState(false);
+  const seletorDeImagem = useRef<HTMLInputElement>(null);
 
   const sujo = assinatura(moduloId, titulo, tag, blocos) !== salvo;
   const publicado = topico?.situacao === 'publicado';
@@ -121,6 +125,39 @@ export default function EditorForm({ topico: inicial, modulos }: Props) {
 
   function adicionarTexto() {
     setBlocos((atual) => [...atual, comChave({ tipo: 'texto', texto: '' })]);
+  }
+
+  /** Envia a imagem escolhida e a acrescenta no fim, para a pessoa descrevê-la. */
+  async function aoEscolherImagem(event: ChangeEvent<HTMLInputElement>) {
+    const arquivo = event.target.files?.[0];
+    event.target.value = ''; // permite escolher o mesmo arquivo de novo depois
+    if (!arquivo) return;
+
+    setErro(null);
+    setAviso(null);
+
+    if (!TIPOS_DE_IMAGEM.includes(arquivo.type)) {
+      setErro('Escolha uma imagem PNG, JPEG ou WebP.');
+      return;
+    }
+    if (arquivo.size > TAMANHO_MAXIMO_IMAGEM) {
+      setErro('A imagem é grande demais. O limite é 5 MB.');
+      return;
+    }
+
+    setOcupado(true);
+    try {
+      const enviada = await enviarImagem(arquivo);
+      setBlocos((atual) => [
+        ...atual,
+        comChave({ tipo: 'imagem', imagemId: enviada.id, alt: '', legenda: '', url: enviada.url }),
+      ]);
+      setAviso('Imagem enviada. Descreva o que ela mostra e salve o passo a passo.');
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : 'Não foi possível enviar a imagem.');
+    } finally {
+      setOcupado(false);
+    }
   }
 
   /* --------------------------------- ações ---------------------------------- */
@@ -423,10 +460,30 @@ export default function EditorForm({ topico: inicial, modulos }: Props) {
               <Plus aria-hidden="true" />
               Adicionar texto
             </button>
+
+            <button
+              type="button"
+              className={forms.secondary}
+              disabled={ocupado}
+              onClick={() => seletorDeImagem.current?.click()}
+            >
+              <ImagePlus aria-hidden="true" />
+              Adicionar imagem
+            </button>
+
+            <input
+              ref={seletorDeImagem}
+              type="file"
+              accept={TIPOS_DE_IMAGEM.join(',')}
+              onChange={aoEscolherImagem}
+              className={styles.arquivo}
+              aria-label="Escolher imagem"
+              tabIndex={-1}
+            />
           </div>
           <p className={forms.hint}>
-            O envio de imagens novas ainda não está disponível. As imagens que já existem
-            podem ser mantidas, reordenadas e removidas.
+            Aceita PNG, JPEG e WebP de até 5 MB. A imagem é reduzida para no máximo 1600 px
+            de largura, e a descrição dela é obrigatória.
           </p>
         </section>
 

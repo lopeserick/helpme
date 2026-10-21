@@ -2,7 +2,7 @@
  * Tipos e chamadas do painel. O formato é o da API (`api/src/rotas/admin.ts`),
  * porque o painel mostra e devolve os dados como estão.
  */
-import { getJson, sendJson } from './client';
+import { getJson, sendForm, sendJson } from './client';
 
 export interface Usuario {
   id: number;
@@ -118,6 +118,26 @@ export async function publicarTopico(id: number) {
 export async function despublicarTopico(id: number) {
   const r = await sendJson<TopicoAdminResposta>('POST', `/api/admin/topicos/${id}/despublicar`);
   return r.topico;
+}
+
+/** Maior imagem aceita pela API; conferido aqui também para avisar antes de enviar. */
+export const TAMANHO_MAXIMO_IMAGEM = 5 * 1024 * 1024;
+export const TIPOS_DE_IMAGEM = ['image/png', 'image/jpeg', 'image/webp'];
+
+export interface ImagemEnviada {
+  id: string;
+  url: string;
+  largura: number;
+  altura: number;
+  bytes: number;
+}
+
+/** Envia uma imagem; a API valida, reduz e converte para WebP. */
+export async function enviarImagem(arquivo: File) {
+  const form = new FormData();
+  form.append('arquivo', arquivo);
+  const r = await sendForm<{ imagem: ImagemEnviada }>('/api/admin/imagens', form);
+  return r.imagem;
 }
 
 export const excluirTopico = (id: number) =>

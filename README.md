@@ -103,14 +103,15 @@ mexer em código. Não há perfis nem aprovação: quem tem conta publica.
    texto e salve como rascunho. **Publicar** coloca no site; **Tirar do site**
    volta para rascunho. Depois de publicado, salvar uma edição já vale no site.
 
-O editor mantém, edita e remove as imagens que já existem nos tópicos, mas ainda
-não envia imagens novas (fase 3). Telas em `src/pages/Admin/`, sessão em
-`src/admin/`.
+Para colocar uma imagem, use **Adicionar imagem** (PNG, JPEG ou WebP, até 5 MB).
+Ela é reduzida para 1600 px de largura e convertida para WebP, e você precisa
+descrever o que ela mostra (texto para quem usa leitor de tela). Telas em
+`src/pages/Admin/`, sessão em `src/admin/`.
 
 ## Onde o conteúdo é cadastrado
 
 O site público só exibe. Módulos, tópicos, imagens e avisos vêm do banco, pela
-API. Os tópicos se cadastram pelo painel; módulos e imagens novas ainda entram
+API. Tópicos e imagens se cadastram pelo painel; módulos novos ainda entram
 pelo `seed` (`api/src/db/conteudo-inicial.json`) ou direto no banco.
 
 - **Categoria da Home:** é um módulo visível na API. O `icone` precisa ser um
@@ -122,6 +123,8 @@ pelo `seed` (`api/src/db/conteudo-inicial.json`) ou direto no banco.
   (`/estoque` ↔ `estoque`), porque a busca e o alerta montam os links assim.
 - **Tópico:** lista de blocos de texto e imagem. O `alt` das imagens é
   obrigatório na API, porque descreve a imagem para leitor de tela.
+- **Imagens:** ficam em disco, na pasta `UPLOADS_DIR` da API (veja
+  `api/README.md`), e o IIS as serve em `/uploads`.
 
 ## Avisos de novidades do ERP
 

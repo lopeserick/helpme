@@ -253,7 +253,8 @@ Cada fase é demonstrável sozinha.
    importa: o conteúdo deixou de morar no código.
 2. **Login, criar, editar e publicar, com texto.** Já fecha o ciclo completo
    de uma demonstração.
-3. **Imagens**, com envio, redimensionamento e o bloco de imagem no editor.
+3. **Imagens**, com envio, redimensionamento e o bloco de imagem no editor
+   (feito).
 4. **Histórico, gestão de módulos e métricas** (o que foi buscado e não
    encontrado, e o "esta resposta te ajudou?").
 
@@ -276,17 +277,23 @@ a VM Windows Server da empresa, com PostgreSQL.
 | `chore/estabilizacao-fase-1` | Front-end: correções, visual, tópicos recolhíveis, alerta de novidades e busca |
 | `feat/api-fase-1` | Esta branch: API de leitura, site consumindo a API e o painel de edição (login, cadastro, lista e editor) |
 
-**Fases 1 e 2 feitas, falta validar no seu ambiente.** O site lê tudo da API
-(`src/api/`) e o painel existe: login, criar conta com código, lista de
-tópicos e editor de blocos de texto, com rascunho, publicar, tirar do site e
-excluir. Sem perfis e sem aprovação, como combinado. Foi conferido na nuvem com
-um PostgreSQL de teste; falta o teste no Windows (`git pull`, `npm ci` na API,
+**Fases 1, 2 e 3 feitas, falta validar no seu ambiente.** O site lê tudo da
+API (`src/api/`) e o painel existe: login, criar conta com código, lista de
+tópicos e editor com blocos de texto e de imagem, com rascunho, publicar, tirar
+do site e excluir. Sem perfis e sem aprovação, como combinado. O envio de
+imagem (`POST /api/admin/imagens`) valida pelo conteúdo, limita a 5 MB, reduz
+para 1600 px e converte para WebP, guardando em `UPLOADS_DIR`. A categoria
+Relatórios agora aparece na Home. Foi tudo conferido na nuvem com um
+PostgreSQL de teste; falta o teste no Windows (`git pull`, `npm ci` na API,
 `npm run db:migrate`, `CODIGO_CADASTRO` no `.env`, subir API e site).
 Ainda fixo no código: "Rotinas mais acessadas", porque a API não registra
 acessos.
 
-**Próximo passo: fase 3, imagens** (envio, redimensionamento e o bloco de imagem
-no editor). Depois, a fase 4: tela de histórico, gestão de módulos e métricas.
+**Atenção na publicação:** a pasta de imagens (`UPLOADS_DIR`) entra no backup
+junto com o banco, e o IIS precisa servi-la em `/uploads`.
+
+**Próximo passo: fase 4**: tela de histórico (a API já grava as alterações),
+gestão de módulos, limpeza de imagens não usadas e métricas.
 
 **Ambiente de desenvolvimento conferido** (Windows): PostgreSQL 18 instalado
 pelo winget, banco `helpme` criado, API respondendo em `localhost:3000`. Em

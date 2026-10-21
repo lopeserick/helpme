@@ -121,3 +121,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* O seletor de arquivo fica escondido: o botão "Adicionar imagem" o abre. */
+.arquivo {
+  display: none;
+}

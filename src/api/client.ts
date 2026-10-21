@@ -91,6 +91,12 @@ export async function getJson<T>(path: string, signal?: AbortSignal): Promise<T>
   return (await resposta.json()) as T;
 }
 
+/** POST de arquivo (multipart). Não define Content-Type: o navegador acerta o limite do corpo. */
+export async function sendForm<T>(path: string, form: FormData): Promise<T> {
+  const resposta = await chamar(path, { method: 'POST', body: form });
+  return (await resposta.json()) as T;
+}
+
 /** POST, PUT ou DELETE com corpo JSON opcional. Respostas 204 devolvem `undefined`. */
 export async function sendJson<T = undefined>(
   method: 'POST' | 'PUT' | 'DELETE',

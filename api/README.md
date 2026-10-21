@@ -135,9 +135,32 @@ de aprovação. Sem login, todas respondem **401**.
 | `POST /api/admin/topicos/:id/publicar` | Publica; mantém a data se já estava publicado |
 | `POST /api/admin/topicos/:id/despublicar` | Volta para rascunho |
 | `DELETE /api/admin/topicos/:id` | Exclusão reversível (`excluido_em`) |
+| `POST /api/admin/imagens` | Envia uma imagem (multipart, campo `arquivo`); devolve `id` e `url` |
 
 Cada ação grava uma linha em `alteracao` (quem, o quê, quando). Ainda não há
-tela para ver esse histórico, e o envio de imagens novas fica para a fase 3.
+tela para ver esse histórico.
+
+### Envio de imagens
+
+`POST /api/admin/imagens` recebe um arquivo e devolve `{ imagem: { id, url,
+largura, altura, bytes } }`. O `id` é o que o bloco de imagem do tópico guarda;
+a `url` serve para mostrar a imagem na hora.
+
+- **Aceita PNG, JPEG e WebP, até 5 MB.** O tipo é conferido pelo conteúdo, não
+  pela extensão: GIF, SVG, arquivo renomeado e imagens com mais de 50 milhões de
+  pixels são recusados (**400**); acima de 5 MB, **413**.
+- **Reduz para no máximo 1600 px de largura e converte para WebP**, com
+  qualidade 82. A orientação do celular é corrigida e os metadados (como a
+  localização da foto) são descartados.
+- **O nome do arquivo é um id novo** (`<uuid>.webp`), então o navegador pode
+  guardar em cache e não há como sobrescrever uma imagem existente.
+- **Onde fica:** na pasta `UPLOADS_DIR` do `.env` (padrão: `api/uploads`). Em
+  produção use um caminho absoluto fora do código, como `D:\helpme\uploads`, que
+  o IIS serve em `/uploads` e que **precisa de backup junto com o banco**. Se
+  trocar a pasta, copie para ela o `tela-exemplo.svg` usado pelo conteúdo de
+  exemplo.
+- **Sem limpeza automática:** uma imagem enviada e não usada, ou removida de um
+  tópico, continua no disco e na tabela `imagem`.
 
 Erro de formato na entrada devolve **400** com a lista de problemas; módulo
 inexistente devolve **404**.
@@ -174,7 +197,7 @@ api/
 ├── drizzle/              # Migrações geradas (versionadas)
 ├── uploads/              # Imagens em desenvolvimento
 └── src/
-    ├── server.ts         # Sobe o Fastify, CORS e tratamento de erro
+    ├── server.ts         # Sobe o Fastify, CORS, upload, arquivos estáticos e tratamento de erro
     ├── env.ts            # Lê e valida a configuração do ambiente
     ├── db/
     │   ├── schema.ts     # Tabelas e o formato dos blocos
@@ -182,9 +205,16 @@ api/
     │   ├── seed.ts       # Carga do conteúdo inicial
     │   └── conteudo-inicial.json
     ├── rotas/
-    │   └── publico.ts    # As rotas de leitura
+    │   ├── publico.ts        # Leitura aberta ao público
+    │   ├── auth.ts           # Cadastro, login, logout
+    │   ├── admin.ts          # Reúne as rotas do painel e exige login
+    │   ├── admin-topicos.ts  # Criar, editar, publicar e excluir tópicos
+    │   └── admin-imagens.ts  # Envio de imagens
     └── lib/
-        └── texto.ts      # Normalização usada pela busca
+        ├── texto.ts      # Normalização usada pela busca
+        ├── senha.ts      # Hash de senha (scrypt)
+        ├── sessao.ts     # Sessão em cookie e exigência de login
+        └── uploads.ts    # Validar, reduzir e gravar imagens
 ```
 
 ## Problemas comuns
@@ -215,4 +245,5 @@ git pull
 - O `drizzle-kit` traz um aviso de segurança de nível moderado no `esbuild`,
   que afeta apenas o servidor de desenvolvimento. Em produção:
   `npm audit --omit=dev` aponta zero.
-- Autenticação, escrita e envio de imagem entram na fase 2.
+- Limpeza de imagens não usadas, histórico de alterações na tela e gestão de
+  módulos entram na fase 4.

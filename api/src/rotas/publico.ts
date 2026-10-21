@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { db } from '../db/index.js';
 import { imagem, modulo, topico, type Bloco } from '../db/schema.js';
 import { normalizar } from '../lib/texto.js';
+import { urlDaImagem } from '../lib/uploads.js';
 
 /**
  * Rotas de leitura, abertas ao público. Nunca devolvem rascunho nem excluído.
@@ -32,7 +33,7 @@ async function urlsDasImagens(blocos: Bloco[][]) {
     .from(imagem)
     .where(inArray(imagem.id, ids));
 
-  return new Map(linhas.map((l) => [l.id, `/uploads/${l.arquivo}`]));
+  return new Map(linhas.map((l) => [l.id, urlDaImagem(l.arquivo)]));
 }
 
 function paraPublico(blocos: Bloco[], urls: Map<string, string>): BlocoPublico[] {
