@@ -1,15 +1,31 @@
 import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
+import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
 import estaticos from '@fastify/static';
 import { ZodError } from 'zod';
 import { env } from './env.js';
 import { conexao } from './db/index.js';
+import { rotasAdmin } from './rotas/admin.js';
+import { rotasAuth } from './rotas/auth.js';
 import { rotasPublicas } from './rotas/publico.js';
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: true, trustProxy: env.TRUST_PROXY });
 
-await app.register(cors, { origin: env.corsOrigins });
+// credentials: o painel usa cookie de sessão, que o navegador só envia entre
+// origens diferentes se a API permitir.
+await app.register(cors, { origin: env.corsOrigins, credentials: true });
+await app.register(cookie);
+// Sem limite geral: só as rotas que pedem (login e cadastro) têm.
+await app.register(rateLimit, {
+  global: false,
+  errorResponseBuilder: (_requisicao, contexto) => ({
+    statusCode: 429,
+    error: 'Too Many Requests',
+    message: `Muitas tentativas. Aguarde ${Math.ceil(contexto.ttl / 1000)} segundos e tente de novo.`,
+  }),
+});
 
 /**
  * Em desenvolvimento a própria API serve as imagens. Em produção quem faz
@@ -39,7 +55,16 @@ app.setErrorHandler((erro, _requisicao, resposta) => {
       ? Number((erro as { statusCode?: number }).statusCode) || 500
       : 500;
 
-  return resposta.code(status).send({ erro: 'erro interno' });
+  // Limite de tentativas: a mensagem já vem pronta para quem está no site.
+  if (status === 429) {
+    const { message } = erro as { message?: string };
+    return resposta.code(429).send({ erro: message ?? 'Muitas tentativas. Tente de novo em instantes.' });
+  }
+  if (status < 500) {
+    return resposta.code(status).send({ erro: 'requisição inválida' });
+  }
+
+  return resposta.code(500).send({ erro: 'erro interno' });
 });
 
 /**
@@ -57,5 +82,7 @@ app.get('/api/saude', async (_requisicao, resposta) => {
 });
 
 await app.register(rotasPublicas);
+await app.register(rotasAuth);
+await app.register(rotasAdmin);
 
 await app.listen({ port: env.PORT, host: env.HOST });

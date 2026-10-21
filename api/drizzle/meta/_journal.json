@@ -8,6 +8,13 @@
       "when": 1792449477057,
       "tag": "0000_sloppy_captain_flint",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792542190497,
+      "tag": "0001_jittery_darkhawk",
+      "breakpoints": true
     }
   ]
 }

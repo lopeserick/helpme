@@ -16,6 +16,17 @@ const schema = z.object({
   HOST: z.string().default('0.0.0.0'),
   /** Endereços do site autorizados a chamar a API, separados por vírgula. */
   CORS_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5173'),
+  /**
+   * Código que a pessoa precisa informar para criar uma conta no painel. Sem
+   * ele definido o cadastro fica desligado: nunca é aberto a qualquer um.
+   */
+  CODIGO_CADASTRO: z.string().trim().min(6, 'use ao menos 6 caracteres').optional(),
+  /** Quanto tempo a pessoa fica logada, em horas. */
+  SESSAO_HORAS: z.coerce.number().positive().default(12),
+  /** Ligue (true) quando o site for servido por HTTPS: o cookie só viaja criptografado. */
+  COOKIE_SECURE: z.stringbool().default(false),
+  /** Ligue (true) atrás do IIS, para o limite de tentativas enxergar o IP real. */
+  TRUST_PROXY: z.stringbool().default(false),
 });
 
 const resultado = schema.safeParse(process.env);

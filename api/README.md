@@ -1,8 +1,8 @@
 # API da central de ajuda
 
-API de conteúdo do Help Me. Esta é a **fase 1** do desenho em
-[`../docs/arquitetura.md`](../docs/arquitetura.md): só leitura, sem painel e
-sem login — isso vem na fase 2.
+API de conteúdo do Help Me, do desenho em
+[`../docs/arquitetura.md`](../docs/arquitetura.md). Tem a leitura pública (fase 1)
+e, na fase 2, o login e as rotas do painel de edição.
 
 ## Tecnologias
 
@@ -61,7 +61,8 @@ sobrescritas. Só use `npm install` quando a intenção for mesmo acrescentar ou
 atualizar uma dependência.
 
 Abra o `.env` e confira a `DATABASE_URL`. Se você usou outra senha ou outra
-porta, ajuste ali.
+porta, ajuste ali. Troque também o `CODIGO_CADASTRO` por um código seu: ele é
+pedido na tela "Criar conta" do painel e, sem ele, o cadastro fica desligado.
 
 ### 4. Criar as tabelas e carregar o conteúdo
 
@@ -92,7 +93,7 @@ rode `npm run teste:api` em outro terminal.
 | `npm run check` | Confere os tipos |
 | `npm run teste:api` | Testa a API no ar: saúde, rotas, erros, CORS e imagens (`API_URL` muda o endereço) |
 | `npm run db:generate` | Gera a migração depois de mudar `src/db/schema.ts` |
-| `npm run db:migrate` | Aplica as migrações pendentes |
+| `npm run db:migrate` | Aplica as migrações pendentes (rode depois de cada `git pull`) |
 | `npm run seed` | Carrega o conteúdo inicial |
 
 ## Rotas
@@ -107,6 +108,36 @@ Todas públicas nesta fase. Nenhuma devolve rascunho nem tópico excluído.
 | `GET /api/novidades?limite=5` | Avisos mais recentes, para o alerta da Home |
 | `GET /api/busca?q=termo` | Busca por título, texto dos blocos e nome do módulo |
 | `GET /uploads/<arquivo>` | Imagens (em produção quem serve é o IIS) |
+
+### Login e cadastro
+
+| Rota | Faz |
+| --- | --- |
+| `POST /api/auth/cadastro` | Cria a conta (nome, e-mail, senha e código de cadastro) e já abre a sessão |
+| `POST /api/auth/login` | E-mail e senha; abre a sessão num cookie |
+| `POST /api/auth/logout` | Encerra a sessão |
+| `GET /api/auth/eu` | Quem está logado (401 se ninguém) |
+
+Cadastro e login aceitam 10 tentativas por minuto por IP; passou disso, **429**.
+
+### Painel (exige login)
+
+Não há perfis: quem tem conta cria, edita, publica e exclui, e não existe etapa
+de aprovação. Sem login, todas respondem **401**.
+
+| Rota | Faz |
+| --- | --- |
+| `GET /api/admin/modulos` | Todos os módulos, para o seletor do editor |
+| `GET /api/admin/topicos` | Lista, inclusive rascunhos, com quem alterou por último |
+| `GET /api/admin/topicos/:id` | Abre um tópico para edição |
+| `POST /api/admin/topicos` | Cria; nasce como rascunho e o endereço (slug) sai do título |
+| `PUT /api/admin/topicos/:id` | Edita título, rótulo e blocos (o slug não muda) |
+| `POST /api/admin/topicos/:id/publicar` | Publica; mantém a data se já estava publicado |
+| `POST /api/admin/topicos/:id/despublicar` | Volta para rascunho |
+| `DELETE /api/admin/topicos/:id` | Exclusão reversível (`excluido_em`) |
+
+Cada ação grava uma linha em `alteracao` (quem, o quê, quando). Ainda não há
+tela para ver esse histórico, e o envio de imagens novas fica para a fase 3.
 
 Erro de formato na entrada devolve **400** com a lista de problemas; módulo
 inexistente devolve **404**.
@@ -125,6 +156,14 @@ inexistente devolve **404**.
   "relatorio" encontrar "Relatório" sem precisar da extensão `unaccent`.
   Quando a base crescer, o caminho é trocar por busca de texto completa do
   PostgreSQL (`tsvector` com dicionário português).
+- **Senha com scrypt**, que já vem no Node (nada para compilar no Windows). O
+  banco guarda só o hash, com os parâmetros dentro dele.
+- **Sessão em cookie `HttpOnly`**, e o banco guarda apenas o SHA-256 do token.
+  `COOKIE_SECURE=true` quando houver HTTPS; `TRUST_PROXY=true` atrás do IIS.
+- **Cadastro com código.** A tela de criar conta é aberta, mas só quem sabe o
+  `CODIGO_CADASTRO` consegue criar conta. Sem isso, qualquer pessoa da internet
+  poderia publicar na central dos clientes. Trocar o código no `.env` e
+  reiniciar a API desliga os convites antigos.
 - **Exclusão é reversível** (`excluido_em`), e rascunho é `publicado_em`
   nulo. As duas regras já estão valendo nas rotas de leitura.
 

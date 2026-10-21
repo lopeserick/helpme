@@ -7,6 +7,12 @@ import PrimeirosPassos from './pages/PrimeirosPassos';
 import News from './pages/News';
 import Relatorios from './pages/Relatorios';
 import NotFound from './pages/NotFound';
+import AdminLayout from './admin/AdminLayout';
+import RequireAuth from './admin/RequireAuth';
+import AdminLogin from './pages/Admin/Login';
+import AdminCadastro from './pages/Admin/Cadastro';
+import AdminTopicos from './pages/Admin/Topicos';
+import AdminEditor from './pages/Admin/Editor';
 
 function App() {
   return (
@@ -19,6 +25,18 @@ function App() {
         <Route path="/primeiros-passos" element={<PrimeirosPassos />} />
         <Route path="/novidades" element={<News />} />
         <Route path="/relatorios" element={<Relatorios />} />
+
+        {/* Painel da equipe: login e cadastro abertos, o resto exige sessão. */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="login" element={<AdminLogin />} />
+          <Route path="cadastro" element={<AdminCadastro />} />
+          <Route element={<RequireAuth />}>
+            <Route index element={<AdminTopicos />} />
+            <Route path="topicos/novo" element={<AdminEditor />} />
+            <Route path="topicos/:id" element={<AdminEditor />} />
+          </Route>
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

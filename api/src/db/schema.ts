@@ -49,7 +49,7 @@ export const usuario = pgTable('usuario', {
   id: serial('id').primaryKey(),
   nome: text('nome').notNull(),
   email: text('email').notNull().unique(),
-  /** Hash da senha (argon2). A senha em si nunca é guardada. */
+  /** Hash scrypt da senha (formato em lib/senha.ts). A senha em si nunca é guardada. */
   senhaHash: text('senha_hash').notNull(),
   ativo: boolean('ativo').notNull().default(true),
   criadoEm: timestamp('criado_em', { withTimezone: true }).notNull().defaultNow(),
@@ -124,3 +124,20 @@ export const alteracao = pgTable('alteracao', {
   em: timestamp('em', { withTimezone: true }).notNull().defaultNow(),
   detalhe: jsonb('detalhe'),
 });
+
+/**
+ * Sessão de quem entrou no painel. A chave é o SHA-256 do token que vai no
+ * cookie: se alguém ler o banco, não consegue se passar por um usuário logado.
+ */
+export const sessao = pgTable(
+  'sessao',
+  {
+    id: text('id').primaryKey(),
+    usuarioId: integer('usuario_id')
+      .notNull()
+      .references(() => usuario.id, { onDelete: 'cascade' }),
+    criadaEm: timestamp('criada_em', { withTimezone: true }).notNull().defaultNow(),
+    expiraEm: timestamp('expira_em', { withTimezone: true }).notNull(),
+  },
+  (t) => [index('sessao_expira').on(t.expiraEm)],
+);

@@ -84,13 +84,34 @@ src/
 | `/primeiros-passos` | Primeiros Passos   | Tópicos da API       |
 | `/novidades`        | O que há de novo   | Acessível pelo alerta da Home |
 | `/relatorios`       | Relatórios         | Tópicos da API (sem link na Home) |
+| `/admin/login`      | Entrar no painel   | Pronta               |
+| `/admin/cadastro`   | Criar conta        | Exige o código de cadastro |
+| `/admin`            | Lista de passo a passo | Exige login      |
+| `/admin/topicos/novo` e `/admin/topicos/:id` | Editor | Exige login |
 | qualquer outra      | Página não encontrada | Pronta            |
+
+## Painel de edição
+
+Em `/admin` a equipe escreve, edita, publica e exclui os passo a passo, sem
+mexer em código. Não há perfis nem aprovação: quem tem conta publica.
+
+1. Defina o `CODIGO_CADASTRO` no `.env` da API (veja `api/README.md`) e rode
+   `npm run db:migrate` na pasta `api` para criar a tabela de sessões.
+2. Abra `http://localhost:5173/admin/cadastro`, informe nome, e-mail, senha e
+   o código. A conta já entra logada.
+3. Em "Novo passo a passo", escolha o módulo, escreva o título e os blocos de
+   texto e salve como rascunho. **Publicar** coloca no site; **Tirar do site**
+   volta para rascunho. Depois de publicado, salvar uma edição já vale no site.
+
+O editor mantém, edita e remove as imagens que já existem nos tópicos, mas ainda
+não envia imagens novas (fase 3). Telas em `src/pages/Admin/`, sessão em
+`src/admin/`.
 
 ## Onde o conteúdo é cadastrado
 
-O site só exibe. Módulos, tópicos, imagens e avisos vêm do banco, pela API, e
-por enquanto entram pelo `seed` (`api/src/db/conteudo-inicial.json`); o painel
-de edição é a fase 2 (veja `docs/arquitetura.md`).
+O site público só exibe. Módulos, tópicos, imagens e avisos vêm do banco, pela
+API. Os tópicos se cadastram pelo painel; módulos e imagens novas ainda entram
+pelo `seed` (`api/src/db/conteudo-inicial.json`) ou direto no banco.
 
 - **Categoria da Home:** é um módulo visível na API. O `icone` precisa ser um
   dos nomes de `components/CategoryIcon` (`database`, `dollar`, `book`,
@@ -127,6 +148,9 @@ existe nesse arquivo, ela não deve ser usada nos componentes.
 
 ## Pendências conhecidas
 
+- O painel não tem histórico de alterações na tela, troca de módulo de um
+  tópico, redefinição de senha nem gestão de contas (a API já grava o histórico
+  em `alteracao`).
 - "Rotinas mais acessadas" (Home) ainda é uma lista fixa no código: a API não
   registra acessos.
 - Não há testes automatizados nem integração contínua.

@@ -175,9 +175,13 @@ Gestão de módulos e de usuários entra depois; no começo, direto no banco.
 
 ### Autenticação
 
-- Conta por pessoa, criada por um administrador. **Sem cadastro aberto.**
+- Conta por pessoa. **Decisão posterior ao desenho:** há tela de criar conta,
+  mas ela exige um código de cadastro (`CODIGO_CADASTRO`, no `.env` da API);
+  sem o código definido o cadastro fica desligado. Não há perfis nem etapa de
+  aprovação: quem tem conta cria, edita e publica.
 - Senha guardada com hash (argon2 ou bcrypt). Nunca em texto.
-- Login devolve um token de sessão com validade curta.
+- Login abre uma sessão de 12 horas (configurável) num cookie `HttpOnly`; o
+  banco guarda só o hash do token. Senha com scrypt.
 - O `/admin` não deve ficar exposto na internet apenas com senha: o ideal é
   restringir por rede interna ou VPN no próprio IIS.
 
@@ -270,16 +274,19 @@ a VM Windows Server da empresa, com PostgreSQL.
 | Branch | O que tem |
 | --- | --- |
 | `chore/estabilizacao-fase-1` | Front-end: correções, visual, tópicos recolhíveis, alerta de novidades e busca |
-| `feat/api-fase-1` | Esta branch: a API de leitura e o site consumindo a API, saindo da anterior |
+| `feat/api-fase-1` | Esta branch: API de leitura, site consumindo a API e o painel de edição (login, cadastro, lista e editor) |
 
-**A fase 1 está feita, falta validar no seu ambiente.** A API funciona com o
-conteúdo no banco e o site passou a consumi-la (`src/api/`): a Home, as páginas
-de módulo, as novidades e a busca leem da API, com estados de carregando e de
-erro. `src/data/helpCenter.ts` foi removido. Foi conferido na nuvem com um
-PostgreSQL de teste; falta o teste no Windows (`git pull`, subir API e site).
-A única coisa ainda fixa no código é "Rotinas mais acessadas", porque a API não
-registra acessos. O próximo passo é a fase 2 (painel e login), que depende dos
-pontos em aberto abaixo.
+**Fases 1 e 2 feitas, falta validar no seu ambiente.** O site lê tudo da API
+(`src/api/`) e o painel existe: login, criar conta com código, lista de
+tópicos e editor de blocos de texto, com rascunho, publicar, tirar do site e
+excluir. Sem perfis e sem aprovação, como combinado. Foi conferido na nuvem com
+um PostgreSQL de teste; falta o teste no Windows (`git pull`, `npm ci` na API,
+`npm run db:migrate`, `CODIGO_CADASTRO` no `.env`, subir API e site).
+Ainda fixo no código: "Rotinas mais acessadas", porque a API não registra
+acessos.
+
+**Próximo passo: fase 3, imagens** (envio, redimensionamento e o bloco de imagem
+no editor). Depois, a fase 4: tela de histórico, gestão de módulos e métricas.
 
 **Ambiente de desenvolvimento conferido** (Windows): PostgreSQL 18 instalado
 pelo winget, banco `helpme` criado, API respondendo em `localhost:3000`. Em
@@ -289,7 +296,8 @@ precisa virar um usuário próprio da aplicação.
 ## Pontos em aberto
 
 - Confirmar que a VM é mesmo Windows Server 2019.
-- Definir quem administra as contas do painel.
-- Definir se existe revisão antes de publicar, ou se quem escreve publica.
+- Definir quem guarda e distribui o código de cadastro.
+- Restringir o `/admin` por rede interna ou VPN no IIS, em vez de deixá-lo
+  exposto só com senha (decisão de infraestrutura, ainda não tomada).
 - Confirmar se o PostgreSQL existente pode receber um banco novo ou se será
   preciso subir uma instância.

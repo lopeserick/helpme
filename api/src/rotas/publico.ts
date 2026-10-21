@@ -79,7 +79,7 @@ export async function rotasPublicas(app: FastifyInstance) {
       .where(eq(modulo.slug, slug));
 
     if (!encontrado) {
-      return resposta.code(404).send({ erro: 'módulo não encontrado' });
+      return resposta.code(404).send({ erro: 'Módulo não encontrado.' });
     }
 
     const linhas = await db
