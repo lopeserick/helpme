@@ -15,6 +15,13 @@
       "when": 1792542190497,
       "tag": "0001_jittery_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792547071163,
+      "tag": "0002_exibir_relatorios",
+      "breakpoints": true
     }
   ]
 }

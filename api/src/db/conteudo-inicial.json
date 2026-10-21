@@ -52,9 +52,9 @@
       "slug": "relatorios",
       "titulo": "Relatórios",
       "descricao": "Vendas, curva ABC e demais análises do sistema",
-      "icone": "book",
+      "icone": "chart",
       "ordem": 5,
-      "visivel": false
+      "visivel": true
     }
   ],
   "topicos": [

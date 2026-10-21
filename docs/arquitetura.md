@@ -118,9 +118,9 @@ create table alteracao (
   publicação, e é o que ordena a página de novidades.
 - **`excluido_em`** torna a exclusão reversível. Numa ferramenta de conteúdo,
   apagar sem querer é questão de tempo.
-- **`modulo.visivel`** controla a lista de categorias da Home. As novidades e
-  os relatórios ficam com `visivel = false`: existem, mas não aparecem como
-  categoria.
+- **`modulo.visivel`** controla a lista de categorias da Home. As novidades
+  ficam com `visivel = false`: existem, mas não aparecem como categoria. Os
+  relatórios apareciam assim e passaram a `visivel = true`.
 - **Imagem em disco, nunca no banco.** O banco guarda só a referência.
 
 ### Formato dos blocos

@@ -83,7 +83,7 @@ src/
 | `/sintegra`         | Sintegra           | Tópicos da API       |
 | `/primeiros-passos` | Primeiros Passos   | Tópicos da API       |
 | `/novidades`        | O que há de novo   | Acessível pelo alerta da Home |
-| `/relatorios`       | Relatórios         | Tópicos da API (sem link na Home) |
+| `/relatorios`       | Relatórios         | Tópicos da API       |
 | `/admin/login`      | Entrar no painel   | Pronta               |
 | `/admin/cadastro`   | Criar conta        | Exige o código de cadastro |
 | `/admin`            | Lista de passo a passo | Exige login      |
@@ -115,7 +115,7 @@ pelo `seed` (`api/src/db/conteudo-inicial.json`) ou direto no banco.
 
 - **Categoria da Home:** é um módulo visível na API. O `icone` precisa ser um
   dos nomes de `components/CategoryIcon` (`database`, `dollar`, `book`,
-  `star`); um nome desconhecido cai no ícone de livro.
+  `star`, `chart`); um nome desconhecido cai no ícone de livro.
 - **Página de um módulo:** crie `src/pages/<Nome>/index.tsx` com `PageShell` e
   `<ModuleTopics slug="<slug-do-modulo>" />`, e registre a rota em
   `src/App.tsx`. O caminho da página precisa ser igual ao slug do módulo

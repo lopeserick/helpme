@@ -1,5 +1,6 @@
 import {
   BookOpenText,
+  ChartColumn,
   CircleDollarSign,
   CircleStar,
   Database,
@@ -12,6 +13,7 @@ const icons: Record<string, LucideIcon> = {
   dollar: CircleDollarSign,
   book: BookOpenText,
   star: CircleStar,
+  chart: ChartColumn,
 };
 
 type Props = {
