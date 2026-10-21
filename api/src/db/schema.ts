@@ -1,10 +1,12 @@
 import {
   bigserial,
   boolean,
+  date,
   index,
   integer,
   jsonb,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp,
@@ -62,6 +64,8 @@ export const modulo = pgTable('modulo', {
   /** Título sem acento e em minúsculas, para a busca encontrá-lo. */
   tituloBusca: text('titulo_busca').notNull().default(''),
   descricao: text('descricao').notNull(),
+  /** Linha sob o título na página do módulo. Vazio: usa a descrição. */
+  subtitulo: text('subtitulo'),
   /** Nome do ícone; quem resolve para componente é o site. */
   icone: text('icone').notNull(),
   ordem: integer('ordem').notNull().default(0),
@@ -119,11 +123,15 @@ export const alteracao = pgTable('alteracao', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),
   topicoId: integer('topico_id').references(() => topico.id),
   usuarioId: integer('usuario_id').references(() => usuario.id),
-  /** criou | editou | publicou | despublicou | excluiu */
+  /** criou | editou | publicou | despublicou | excluiu | restaurou */
   acao: text('acao').notNull(),
   em: timestamp('em', { withTimezone: true }).notNull().defaultNow(),
+  /**
+   * Em criou, editou e restaurou: cópia de título, rótulo e blocos como
+   * ficaram, o que permite restaurar a versão depois.
+   */
   detalhe: jsonb('detalhe'),
-});
+}, (t) => [index('alteracao_topico').on(t.topicoId, t.em)]);
 
 /**
  * Sessão de quem entrou no painel. A chave é o SHA-256 do token que vai no
@@ -140,4 +148,50 @@ export const sessao = pgTable(
     expiraEm: timestamp('expira_em', { withTimezone: true }).notNull(),
   },
   (t) => [index('sessao_expira').on(t.expiraEm)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Métricas                                                            */
+/* ------------------------------------------------------------------ */
+/*
+ * Guardadas como contagens por dia, sem IP nem nada que identifique quem
+ * acessou. Cada evento soma 1 na linha do dia (insert ... on conflict).
+ */
+
+/** Aberturas de tópico por dia. Alimenta "Rotinas mais acessadas". */
+export const acessoDia = pgTable(
+  'acesso_dia',
+  {
+    topicoId: integer('topico_id')
+      .notNull()
+      .references(() => topico.id, { onDelete: 'cascade' }),
+    dia: date('dia').notNull(),
+    total: integer('total').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.topicoId, t.dia] })],
+);
+
+/** "Esta resposta ajudou?" por tópico e dia. */
+export const avaliacaoDia = pgTable(
+  'avaliacao_dia',
+  {
+    topicoId: integer('topico_id')
+      .notNull()
+      .references(() => topico.id, { onDelete: 'cascade' }),
+    dia: date('dia').notNull(),
+    ajudou: integer('ajudou').notNull().default(0),
+    naoAjudou: integer('nao_ajudou').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.topicoId, t.dia] })],
+);
+
+/** Termos buscados que não acharam nada, já normalizados. */
+export const buscaVaziaDia = pgTable(
+  'busca_vazia_dia',
+  {
+    termo: text('termo').notNull(),
+    dia: date('dia').notNull(),
+    total: integer('total').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.termo, t.dia] })],
 );

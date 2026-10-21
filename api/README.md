@@ -127,7 +127,10 @@ de aprovação. Sem login, todas respondem **401**.
 
 | Rota | Faz |
 | --- | --- |
-| `GET /api/admin/modulos` | Todos os módulos, para o seletor do editor |
+| `GET /api/admin/modulos` | Todos os módulos, com a contagem de tópicos |
+| `POST /api/admin/modulos` | Cria um módulo; o slug sai do título |
+| `PUT /api/admin/modulos/:id` | Edita título, descrição, subtítulo, ícone e se aparece na Home (o slug não muda) |
+| `PUT /api/admin/modulos-ordem` | Nova ordem: `{ ids: [...] }` com todos os módulos |
 | `GET /api/admin/topicos` | Lista, inclusive rascunhos, com quem alterou por último |
 | `GET /api/admin/topicos/:id` | Abre um tópico para edição |
 | `POST /api/admin/topicos` | Cria; nasce como rascunho e o endereço (slug) sai do título |
@@ -135,10 +138,38 @@ de aprovação. Sem login, todas respondem **401**.
 | `POST /api/admin/topicos/:id/publicar` | Publica; mantém a data se já estava publicado |
 | `POST /api/admin/topicos/:id/despublicar` | Volta para rascunho |
 | `DELETE /api/admin/topicos/:id` | Exclusão reversível (`excluido_em`) |
+| `GET /api/admin/topicos/:id/historico` | Linha do tempo: ação, quem, quando e se dá para restaurar |
+| `POST /api/admin/topicos/:id/restaurar/:alteracaoId` | Volta o conteúdo para aquela versão |
+| `GET /api/admin/metricas?dias=30` | Buscas sem resultado, avaliações e mais acessados |
+| `GET /api/admin/imagens/sem-uso` | Imagens que nenhum tópico usa |
+| `DELETE /api/admin/imagens/:id` | Apaga uma imagem sem uso |
+| `POST /api/admin/imagens/limpar` | Apaga todas as imagens sem uso |
 | `POST /api/admin/imagens` | Envia uma imagem (multipart, campo `arquivo`); devolve `id` e `url` |
 
-Cada ação grava uma linha em `alteracao` (quem, o quê, quando). Ainda não há
-tela para ver esse histórico.
+Cada ação grava uma linha em `alteracao` (quem, o quê, quando). Criar, editar
+e restaurar guardam também uma cópia de título, rótulo e blocos, que é o que
+permite restaurar. Linhas de antes da fase 4 só têm o título e não são
+restauráveis. Ao restaurar, blocos com imagem que já foi apagada ficam de fora,
+e a resposta diz quantos (`imagensPerdidas`).
+
+**Módulos.** Os slugs `admin`, `api`, `uploads`, `assets` e `exemplos` são
+reservados (`src/lib/modulos.ts`), porque já são caminhos do site ou do IIS. O
+ícone precisa ser um de `database`, `dollar`, `book`, `star` e `chart`. Não há
+exclusão de módulo, só ocultar da Home (`visivel`).
+
+### Métricas (públicas)
+
+| Rota | Faz |
+| --- | --- |
+| `POST /api/metricas/acesso` | `{ modulo, topico }`: soma uma abertura no dia |
+| `POST /api/metricas/avaliacao` | `{ modulo, topico, ajudou }`: soma um voto |
+| `POST /api/metricas/busca-vazia` | `{ termo }`: soma uma busca sem resultado (3 a 80 letras) |
+| `GET /api/mais-acessados?limite=4` | Os mais abertos nos últimos 30 dias, para a Home |
+
+Abertas, porque o visitante não faz login, mas com limite de 60 por minuto por
+IP. Só aceitam tópicos publicados. Guardam contagens por dia
+(`acesso_dia`, `avaliacao_dia`, `busca_vazia_dia`), sem IP nem identificação.
+O "dia" segue o fuso de America/Bahia.
 
 ### Envio de imagens
 
@@ -159,8 +190,12 @@ a `url` serve para mostrar a imagem na hora.
   o IIS serve em `/uploads` e que **precisa de backup junto com o banco**. Se
   trocar a pasta, copie para ela o `tela-exemplo.svg` usado pelo conteúdo de
   exemplo.
-- **Sem limpeza automática:** uma imagem enviada e não usada, ou removida de um
-  tópico, continua no disco e na tabela `imagem`.
+- **Limpeza pelo painel, não automática:** imagem enviada e não usada, ou
+  removida de um tópico, fica no disco até alguém apagar em Painel > Imagens.
+  Contam como "em uso" as imagens de tópicos excluídos (a exclusão é
+  reversível); as enviadas há menos de 1 hora não aparecem, porque podem estar
+  num editor ainda não salvo. Apagar uma imagem tira ela das versões antigas do
+  histórico.
 
 Erro de formato na entrada devolve **400** com a lista de problemas; módulo
 inexistente devolve **404**.
@@ -207,14 +242,19 @@ api/
     ├── rotas/
     │   ├── publico.ts        # Leitura aberta ao público
     │   ├── auth.ts           # Cadastro, login, logout
+    │   ├── metricas.ts       # Registro público de acessos, votos e buscas
     │   ├── admin.ts          # Reúne as rotas do painel e exige login
-    │   ├── admin-topicos.ts  # Criar, editar, publicar e excluir tópicos
-    │   └── admin-imagens.ts  # Envio de imagens
+    │   ├── admin-topicos.ts  # Tópicos, histórico e restauração
+    │   ├── admin-modulos.ts  # Criar, editar e ordenar módulos
+    │   ├── admin-metricas.ts # Resumo das métricas
+    │   └── admin-imagens.ts  # Envio e limpeza de imagens
     └── lib/
         ├── texto.ts      # Normalização usada pela busca
         ├── senha.ts      # Hash de senha (scrypt)
         ├── sessao.ts     # Sessão em cookie e exigência de login
-        └── uploads.ts    # Validar, reduzir e gravar imagens
+        ├── uploads.ts    # Validar, reduzir e gravar imagens
+        ├── modulos.ts    # Ícones aceitos e slugs reservados
+        └── metricas.ts   # Data do dia para as contagens
 ```
 
 ## Problemas comuns
@@ -245,5 +285,4 @@ git pull
 - O `drizzle-kit` traz um aviso de segurança de nível moderado no `esbuild`,
   que afeta apenas o servidor de desenvolvimento. Em produção:
   `npm audit --omit=dev` aponta zero.
-- Limpeza de imagens não usadas, histórico de alterações na tela e gestão de
-  módulos entram na fase 4.
+- Sem troca de módulo de um tópico, redefinição de senha nem gestão de contas.

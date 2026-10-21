@@ -256,7 +256,8 @@ Cada fase é demonstrável sozinha.
 3. **Imagens**, com envio, redimensionamento e o bloco de imagem no editor
    (feito).
 4. **Histórico, gestão de módulos e métricas** (o que foi buscado e não
-   encontrado, e o "esta resposta te ajudou?").
+   encontrado, e o "esta resposta te ajudou?"), mais a limpeza de imagens
+   (feito).
 
 As fases 2 e 3 podem virar uma só, se preferir mostrar o fluxo completo de
 uma vez.
@@ -275,25 +276,30 @@ a VM Windows Server da empresa, com PostgreSQL.
 | Branch | O que tem |
 | --- | --- |
 | `chore/estabilizacao-fase-1` | Front-end: correções, visual, tópicos recolhíveis, alerta de novidades e busca |
-| `feat/api-fase-1` | Esta branch: API de leitura, site consumindo a API e o painel de edição (login, cadastro, lista e editor) |
+| `feat/api-fase-1` | Esta branch: API, site consumindo a API e o painel completo (fases 1 a 4) |
 
-**Fases 1, 2 e 3 feitas, falta validar no seu ambiente.** O site lê tudo da
-API (`src/api/`) e o painel existe: login, criar conta com código, lista de
-tópicos e editor com blocos de texto e de imagem, com rascunho, publicar, tirar
-do site e excluir. Sem perfis e sem aprovação, como combinado. O envio de
-imagem (`POST /api/admin/imagens`) valida pelo conteúdo, limita a 5 MB, reduz
-para 1600 px e converte para WebP, guardando em `UPLOADS_DIR`. A categoria
-Relatórios agora aparece na Home. Foi tudo conferido na nuvem com um
-PostgreSQL de teste; falta o teste no Windows (`git pull`, `npm ci` na API,
-`npm run db:migrate`, `CODIGO_CADASTRO` no `.env`, subir API e site).
-Ainda fixo no código: "Rotinas mais acessadas", porque a API não registra
-acessos.
+**Fases 1 a 4 feitas, falta validar a 4 no seu ambiente.** O site lê tudo da
+API e o painel tem quatro seções:
+
+- **Passo a passo:** lista e editor (texto e imagem, rascunho, publicar, tirar
+  do site, excluir) com **histórico** e **restaurar versão**.
+- **Módulos:** criar, editar, ocultar da Home e reordenar. O site tem uma página
+  genérica (`/:slug`) no lugar das seis fixas, então módulo novo já ganha
+  página. Subtítulo da página é opcional (vazio usa a descrição). Sem exclusão.
+- **Métricas:** buscas sem resultado, "Esta resposta ajudou?" e mais acessados,
+  como contagens por dia, sem IP. "Rotinas mais acessadas" na Home agora vem
+  daqui.
+- **Imagens:** lista e apaga as que nenhum tópico usa.
+
+Sem perfis e sem aprovação, como combinado. Tudo conferido na nuvem com um
+PostgreSQL de teste. No Windows: `git pull`, `npm ci` na raiz e na API,
+`npm run db:migrate` na API, subir API e site.
 
 **Atenção na publicação:** a pasta de imagens (`UPLOADS_DIR`) entra no backup
 junto com o banco, e o IIS precisa servi-la em `/uploads`.
 
-**Próximo passo: fase 4**: tela de histórico (a API já grava as alterações),
-gestão de módulos, limpeza de imagens não usadas e métricas.
+**Próximo passo: publicar na VM** (IIS, API como serviço, HTTPS, backup e
+`/admin` só pela rede interna).
 
 **Ambiente de desenvolvimento conferido** (Windows): PostgreSQL 18 instalado
 pelo winget, banco `helpme` criado, API respondendo em `localhost:3000`. Em

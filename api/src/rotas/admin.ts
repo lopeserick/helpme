@@ -1,6 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import { exigirLogin } from '../lib/sessao.js';
 import { rotasAdminImagens } from './admin-imagens.js';
+import { rotasAdminMetricas } from './admin-metricas.js';
+import { rotasAdminModulos } from './admin-modulos.js';
 import { rotasAdminTopicos } from './admin-topicos.js';
 
 /**
@@ -13,5 +15,7 @@ export async function rotasAdmin(app: FastifyInstance) {
 
     await admin.register(rotasAdminTopicos);
     await admin.register(rotasAdminImagens);
+    await admin.register(rotasAdminModulos);
+    await admin.register(rotasAdminMetricas);
   });
 }

@@ -1,40 +1,25 @@
+import { Link } from 'react-router-dom';
 import styles from './styles.module.css';
 
 type Props = {
-  items: string[];
-  onItemClick?: (text: string, index: number) => void;
+  items: { title: string; to: string }[];
 };
 
-export default function Index({ items, onItemClick }: Props) {
+/** Lista "Rotinas mais acessadas": cada item leva direto ao tópico. */
+export default function Index({ items }: Props) {
   return (
     <section>
       <h2 className={styles.title}>Rotinas mais acessadas</h2>
 
       <ol className={styles.list}>
-        {items.map((item, i) => {
-          const content = (
-            <>
+        {items.map((item, i) => (
+          <li key={item.to}>
+            <Link to={item.to} className={`${styles.item} ${styles.clickable}`}>
               <span className={styles.badge}>{i + 1}</span>
-              <span className={styles.text}>{item}</span>
-            </>
-          );
-
-          return (
-            <li key={item}>
-              {onItemClick ? (
-                <button
-                  type="button"
-                  className={`${styles.item} ${styles.clickable}`}
-                  onClick={() => onItemClick(item, i)}
-                >
-                  {content}
-                </button>
-              ) : (
-                <div className={styles.item}>{content}</div>
-              )}
-            </li>
-          );
-        })}
+              <span className={styles.text}>{item.title}</span>
+            </Link>
+          </li>
+        ))}
       </ol>
     </section>
   );

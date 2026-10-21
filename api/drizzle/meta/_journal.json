@@ -22,6 +22,13 @@
       "when": 1792547071163,
       "tag": "0002_exibir_relatorios",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792622220722,
+      "tag": "0003_fase_4",
+      "breakpoints": true
     }
   ]
 }

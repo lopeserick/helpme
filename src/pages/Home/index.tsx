@@ -4,27 +4,27 @@ import CategoryCard from '../../components/CategoryCard';
 import CategoryIcon from '../../components/CategoryIcon';
 import Index from '../../components/Index';
 import NewsAlert from '../../components/NewsAlert';
-import { parseCategories, type ModulosResposta } from '../../api/helpCenter';
+import {
+  parseCategories,
+  parsePopular,
+  type MaisAcessadosResposta,
+  type ModulosResposta,
+} from '../../api/helpCenter';
 import { useApi } from '../../api/useApi';
 import './home.css';
-
-/**
- * Ainda fixas no código: a API não tem como saber quais rotinas são as mais
- * acessadas, porque ainda não registra acessos. Quando passar a registrar, esta
- * lista vira uma rota de leitura.
- */
-const popularRoutines = [
-  'Como cadastrar produto',
-  'Emitir nota fiscal',
-  'Gerar relatório mensal',
-  'Configurar formas de pagamento',
-];
 
 export default function Home() {
   const { data, error, loading, retry } = useApi<
     ModulosResposta,
     ReturnType<typeof parseCategories>
   >('/api/modulos', parseCategories);
+
+  // Os mais abertos nos últimos 30 dias. Sem dados ainda, ou com erro, a lista
+  // simplesmente não aparece: é um atalho, não o conteúdo principal.
+  const populares = useApi<MaisAcessadosResposta, ReturnType<typeof parsePopular>>(
+    '/api/mais-acessados?limite=4',
+    parsePopular,
+  );
 
   return (
     <>
@@ -59,7 +59,7 @@ export default function Home() {
           </AsyncContent>
         </section>
 
-        <Index items={popularRoutines} />
+        {populares.data && populares.data.length > 0 && <Index items={populares.data} />}
       </main>
     </>
   );

@@ -2,10 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import type { Topic } from '../../api/helpCenter';
+import { registrarAcesso } from '../../api/metricas';
+import Feedback from './Feedback';
 import styles from './styles.module.css';
 
 type Props = {
   topics: Topic[];
+  /**
+   * Módulo dos tópicos. Quando informado, o site registra quem abriu cada
+   * tópico e mostra "Esta resposta ajudou?". A prévia do editor não informa,
+   * para não contar acessos que não são de clientes.
+   */
+  moduleSlug?: string;
 };
 
 const dateFormat = new Intl.DateTimeFormat('pt-BR', {
@@ -29,10 +37,18 @@ function formatDate(value: string) {
  * Quando o endereço traz o id de um tópico (por exemplo /estoque#inventario,
  * como a busca da Home monta), esse tópico abre sozinho e fica destacado.
  */
-export default function RoutineTopics({ topics }: Props) {
+export default function RoutineTopics({ topics, moduleSlug }: Props) {
   const { hash } = useLocation();
   const refs = useRef(new Map<string, HTMLDetailsElement>());
   const [highlighted, setHighlighted] = useState<string | null>(null);
+  // Conta uma abertura por tópico enquanto a página está aberta, não a cada clique.
+  const contados = useRef(new Set<string>());
+
+  function aoAbrirOuFechar(topicId: string, aberto: boolean) {
+    if (!aberto || !moduleSlug || contados.current.has(topicId)) return;
+    contados.current.add(topicId);
+    registrarAcesso(moduleSlug, topicId);
+  }
 
   useEffect(() => {
     const id = decodeURIComponent(hash.replace('#', ''));
@@ -57,6 +73,7 @@ export default function RoutineTopics({ topics }: Props) {
             if (node) refs.current.set(topic.id, node);
             else refs.current.delete(topic.id);
           }}
+          onToggle={(event) => aoAbrirOuFechar(topic.id, event.currentTarget.open)}
           className={`${styles.topic} ${
             highlighted === topic.id ? styles.highlighted : ''
           }`}
@@ -86,6 +103,8 @@ export default function RoutineTopics({ topics }: Props) {
                 </figure>
               ),
             )}
+
+            {moduleSlug && <Feedback moduleSlug={moduleSlug} topicId={topic.id} />}
           </div>
         </details>
       ))}

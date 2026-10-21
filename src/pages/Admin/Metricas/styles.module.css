@@ -1,0 +1,37 @@
+.periodo {
+  max-width: 220px;
+  margin-bottom: 28px;
+}
+
+.secoes {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 820px;
+}
+
+.secoes section > * + * {
+  margin-top: 10px;
+}
+
+.subtitulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.vazio {
+  color: var(--ink-muted);
+}
+
+.numero {
+  width: 1%;
+  text-align: right !important;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.alerta {
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 var(--mark);
+}

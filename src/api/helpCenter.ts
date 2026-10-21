@@ -86,8 +86,12 @@ export interface ModulosResposta {
 }
 
 export interface ModuloResposta {
-  modulo: ModuloApi;
+  modulo: ModuloApi & { subtitulo: string | null };
   topicos: TopicoApi[];
+}
+
+export interface MaisAcessadosResposta {
+  topicos: { titulo: string; topicoSlug: string; moduloSlug: string }[];
 }
 
 export interface NovidadesResposta {
@@ -163,6 +167,35 @@ export function parseTopics(raw: ModuloResposta): Topic[] {
   return mostrarData
     ? [...topics].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''))
     : topics;
+}
+
+/** Página de um módulo: título, linha de apoio e tópicos. */
+export interface ModulePage {
+  slug: string;
+  title: string;
+  subtitle: string;
+  topics: Topic[];
+}
+
+export function parseModulePage(raw: ModuloResposta): ModulePage {
+  return {
+    slug: raw.modulo.slug,
+    title: raw.modulo.titulo,
+    subtitle: raw.modulo.subtitulo || raw.modulo.descricao,
+    topics: parseTopics(raw),
+  };
+}
+
+export interface PopularTopic {
+  title: string;
+  to: string;
+}
+
+export function parsePopular(raw: MaisAcessadosResposta): PopularTopic[] {
+  return raw.topicos.map((t) => ({
+    title: t.titulo,
+    to: `${pathFor(t.moduloSlug)}#${t.topicoSlug}`,
+  }));
 }
 
 export function parseNews(raw: NovidadesResposta): NewsItem[] {

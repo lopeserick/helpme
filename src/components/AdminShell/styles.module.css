@@ -80,3 +80,35 @@
 .narrow {
   max-width: 560px;
 }
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.navLink {
+  padding: 6px 14px;
+  border: 1px solid var(--brand-700);
+  border-radius: 999px;
+  color: var(--brand-100);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  border-color: var(--mark);
+  color: var(--mark);
+}
+
+.ativo {
+  border-color: var(--mark);
+  background: var(--mark);
+  color: var(--brand-900);
+}
+
+.ativo:hover {
+  color: var(--brand-900);
+}

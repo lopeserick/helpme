@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AdminShell from '../../../components/AdminShell';
 import AsyncContent from '../../../components/AsyncContent';
@@ -15,6 +16,13 @@ const voltar = { to: '/admin', label: 'Voltar para a lista' };
 
 /** Abre um passo a passo que já existe. */
 function Editar({ id }: { id: string }) {
+  const [versao, setVersao] = useState(0);
+  const [restaurado, setRestaurado] = useState<{
+    id: number;
+    topico: TopicoCompleto;
+    aviso: string;
+  } | null>(null);
+
   const { data, error, loading, retry } = useApi<TopicoAdminResposta, TopicoCompleto>(
     `/api/admin/topicos/${encodeURIComponent(id)}`,
     parseTopico,
@@ -35,8 +43,22 @@ function Editar({ id }: { id: string }) {
     );
   }
 
-  // A chave refaz o formulário do zero se a pessoa trocar de tópico.
-  return <EditorForm key={data.id} topico={data} modulos={[]} />;
+  // Depois de restaurar uma versão, o formulário recomeça com o conteúdo dela.
+  const atual = restaurado?.id === data.id ? restaurado : null;
+
+  // A chave refaz o formulário do zero ao trocar de tópico ou restaurar.
+  return (
+    <EditorForm
+      key={`${data.id}-${versao}`}
+      topico={atual?.topico ?? data}
+      modulos={[]}
+      avisoAoAbrir={atual?.aviso}
+      onRestaurado={(topico, aviso) => {
+        setRestaurado({ id: data.id, topico, aviso });
+        setVersao((n) => n + 1);
+      }}
+    />
+  );
 }
 
 /** Começa um passo a passo novo; só precisa da lista de módulos para o seletor. */

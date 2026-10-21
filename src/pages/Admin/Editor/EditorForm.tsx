@@ -19,6 +19,7 @@ import {
 } from '../../../api/admin';
 import { mediaUrl } from '../../../api/client';
 import type { Topic, TopicBlock } from '../../../api/helpCenter';
+import Historico from './Historico';
 import forms from '../forms.module.css';
 import styles from './styles.module.css';
 
@@ -27,6 +28,10 @@ type Props = {
   topico?: TopicoCompleto;
   /** Módulos para o seletor (só usados ao criar). */
   modulos: ModuloResumo[];
+  /** Mensagem para mostrar ao abrir, como depois de restaurar uma versão. */
+  avisoAoAbrir?: string;
+  /** Uma versão do histórico foi restaurada: o editor reabre com ela. */
+  onRestaurado?: (topico: TopicoCompleto, aviso: string) => void;
 };
 
 /** Um bloco no editor, com uma chave só para o React não confundir os blocos ao reordenar. */
@@ -57,10 +62,16 @@ function horaAtual() {
  * Simples de propósito: cada bloco de texto é um parágrafo, e a ordem se muda
  * com os botões de subir e descer.
  */
-export default function EditorForm({ topico: inicial, modulos }: Props) {
+export default function EditorForm({
+  topico: inicial,
+  modulos,
+  avisoAoAbrir,
+  onRestaurado,
+}: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const avisoInicial = (location.state as { aviso?: string } | null)?.aviso ?? null;
+  const avisoInicial =
+    avisoAoAbrir ?? (location.state as { aviso?: string } | null)?.aviso ?? null;
 
   const [topico, setTopico] = useState<TopicoCompleto | undefined>(inicial);
   const [moduloId, setModuloId] = useState<number | ''>(inicial?.moduloId ?? '');
@@ -495,6 +506,10 @@ export default function EditorForm({ topico: inicial, modulos }: Props) {
             </p>
             <RoutineTopics topics={[topicoDePrevia]} />
           </section>
+        )}
+
+        {topico && onRestaurado && (
+          <Historico topico={topico} sujo={sujo} onRestaurado={onRestaurado} />
         )}
 
         <div className={styles.rodape}>

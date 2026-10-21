@@ -12,6 +12,7 @@
       "slug": "estoque",
       "titulo": "Gestão de Estoque",
       "descricao": "Gerencie produtos e movimentações",
+      "subtitulo": "Produtos, entradas, inventário e transferências entre filiais.",
       "icone": "database",
       "ordem": 0,
       "visivel": true
@@ -20,6 +21,7 @@
       "slug": "financeiro",
       "titulo": "Financeiro",
       "descricao": "Controle de contas e fluxo de caixa",
+      "subtitulo": "Contas a pagar, baixa de títulos, conciliação e fluxo de caixa.",
       "icone": "dollar",
       "ordem": 1,
       "visivel": true
@@ -28,6 +30,7 @@
       "slug": "sintegra",
       "titulo": "Sintegra",
       "descricao": "Arquivos e Relatórios Fiscais",
+      "subtitulo": "Geração, validação e correção do arquivo fiscal.",
       "icone": "book",
       "ordem": 2,
       "visivel": true
@@ -36,6 +39,7 @@
       "slug": "primeiros-passos",
       "titulo": "Primeiros Passos",
       "descricao": "Como realizar as rotinas básicas do Acesse",
+      "subtitulo": "O básico para começar a usar o Acesse no dia a dia.",
       "icone": "star",
       "ordem": 3,
       "visivel": true
@@ -44,6 +48,7 @@
       "slug": "novidades",
       "titulo": "O que há de novo",
       "descricao": "Rotinas, programas e validações fiscais implantados no Acesse",
+      "subtitulo": "Rotinas, programas e validações fiscais implantados no Acesse, do mais recente para o mais antigo.",
       "icone": "star",
       "ordem": 4,
       "visivel": false
@@ -52,6 +57,7 @@
       "slug": "relatorios",
       "titulo": "Relatórios",
       "descricao": "Vendas, curva ABC e demais análises do sistema",
+      "subtitulo": "Vendas, curva ABC e demais análises do sistema.",
       "icone": "chart",
       "ordem": 5,
       "visivel": true

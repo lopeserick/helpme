@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { and, asc, desc, eq, inArray, isNotNull, isNull, like, max, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, isNull, like, max, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import {
@@ -120,25 +120,31 @@ async function abrirTopico(id: number) {
   };
 }
 
+type Acao = 'criou' | 'editou' | 'publicou' | 'despublicou' | 'excluiu' | 'restaurou';
+
+/** Cópia do conteúdo guardada no histórico, para poder restaurar depois. */
+interface Versao {
+  titulo: string;
+  tag: string | null;
+  blocos: Bloco[];
+}
+
+const versaoSchema = z.object({
+  titulo: z.string(),
+  tag: z.string().nullable(),
+  blocos: blocosSchema,
+});
+
 async function registrar(
   topicoId: number,
   usuarioId: number,
-  acao: 'criou' | 'editou' | 'publicou' | 'despublicou' | 'excluiu',
-  detalhe?: Record<string, unknown>,
+  acao: Acao,
+  detalhe?: Versao,
 ) {
   await db.insert(alteracao).values({ topicoId, usuarioId, acao, detalhe });
 }
 
 export async function rotasAdminTopicos(admin: FastifyInstance) {
-  /** Todos os módulos, inclusive os que não aparecem na Home, para o seletor do editor. */
-  admin.get('/api/admin/modulos', async () => {
-    const linhas = await db
-      .select({ id: modulo.id, slug: modulo.slug, titulo: modulo.titulo })
-      .from(modulo)
-      .orderBy(asc(modulo.ordem));
-    return { modulos: linhas };
-  });
-
   /** Lista de tópicos, inclusive rascunhos, com filtro por módulo, situação e texto. */
   admin.get('/api/admin/topicos', async (requisicao) => {
     const { modulo: moduloSlug, situacao, q } = z
@@ -229,7 +235,11 @@ export async function rotasAdminTopicos(admin: FastifyInstance) {
       })
       .returning({ id: topico.id });
 
-    await registrar(criado.id, autor, 'criou', { titulo: dados.titulo });
+    await registrar(criado.id, autor, 'criou', {
+      titulo: dados.titulo,
+      tag: dados.tag,
+      blocos: dados.blocos,
+    });
     return resposta.code(201).send({ topico: await abrirTopico(criado.id) });
   });
 
@@ -258,7 +268,11 @@ export async function rotasAdminTopicos(admin: FastifyInstance) {
 
     if (!atualizado) return resposta.code(404).send({ erro: 'Tópico não encontrado.' });
 
-    await registrar(id, autor, 'editou', { titulo: dados.titulo });
+    await registrar(id, autor, 'editou', {
+      titulo: dados.titulo,
+      tag: dados.tag,
+      blocos: dados.blocos,
+    });
     return { topico: await abrirTopico(id) };
   });
 
@@ -315,5 +329,102 @@ export async function rotasAdminTopicos(admin: FastifyInstance) {
 
     await registrar(id, autor, 'excluiu');
     return resposta.code(204).send();
+  });
+
+  /** Linha do tempo do tópico: quem fez o quê e quando, do mais recente ao mais antigo. */
+  admin.get('/api/admin/topicos/:id/historico', async (requisicao, resposta) => {
+    const { id } = idSchema.parse(requisicao.params);
+
+    const [existe] = await db
+      .select({ id: topico.id })
+      .from(topico)
+      .where(and(eq(topico.id, id), isNull(topico.excluidoEm)));
+    if (!existe) return resposta.code(404).send({ erro: 'Tópico não encontrado.' });
+
+    const linhas = await db
+      .select({
+        id: alteracao.id,
+        acao: alteracao.acao,
+        em: alteracao.em,
+        usuario: usuario.nome,
+        detalhe: alteracao.detalhe,
+      })
+      .from(alteracao)
+      .leftJoin(usuario, eq(alteracao.usuarioId, usuario.id))
+      .where(eq(alteracao.topicoId, id))
+      .orderBy(desc(alteracao.em), desc(alteracao.id))
+      .limit(200);
+
+    return {
+      historico: linhas.map(({ detalhe, ...l }) => {
+        const versao = versaoSchema.safeParse(detalhe);
+        return {
+          ...l,
+          // Só as linhas com cópia completa podem ser restauradas (as antigas
+          // guardavam apenas o título).
+          titulo: versao.success ? versao.data.titulo : null,
+          restauravel: versao.success,
+        };
+      }),
+    };
+  });
+
+  /**
+   * Volta o conteúdo para o que estava numa linha do histórico. Não mexe em
+   * publicado/rascunho: se o tópico está no site, a versão restaurada já vale.
+   * Blocos de imagem cujo arquivo foi apagado na limpeza são deixados de fora.
+   */
+  admin.post('/api/admin/topicos/:id/restaurar/:alteracaoId', async (requisicao, resposta) => {
+    const { id, alteracaoId } = z
+      .object({
+        id: z.coerce.number().int().positive(),
+        alteracaoId: z.coerce.number().int().positive(),
+      })
+      .parse(requisicao.params);
+    const autor = requisicao.usuario!.id;
+
+    const [linha] = await db
+      .select({ detalhe: alteracao.detalhe })
+      .from(alteracao)
+      .where(and(eq(alteracao.id, alteracaoId), eq(alteracao.topicoId, id)));
+
+    const versao = versaoSchema.safeParse(linha?.detalhe);
+    if (!linha || !versao.success) {
+      return resposta.code(404).send({ erro: 'Essa versão não pode ser restaurada.' });
+    }
+
+    const idsCitados = versao.data.blocos.flatMap((b) =>
+      b.tipo === 'imagem' ? [b.imagemId] : [],
+    );
+    const existentes = new Set<string>();
+    if (idsCitados.length > 0) {
+      const achadas = await db
+        .select({ id: imagem.id })
+        .from(imagem)
+        .where(inArray(imagem.id, idsCitados));
+      for (const a of achadas) existentes.add(a.id);
+    }
+    const blocos = versao.data.blocos.filter(
+      (b) => b.tipo !== 'imagem' || existentes.has(b.imagemId),
+    );
+    const imagensPerdidas = versao.data.blocos.length - blocos.length;
+
+    const [atualizado] = await db
+      .update(topico)
+      .set({
+        titulo: versao.data.titulo,
+        tag: versao.data.tag,
+        blocos,
+        textoBusca: montarTextoBusca(versao.data.titulo, blocos),
+        atualizadoPor: autor,
+        atualizadoEm: new Date(),
+      })
+      .where(and(eq(topico.id, id), isNull(topico.excluidoEm)))
+      .returning({ id: topico.id });
+
+    if (!atualizado) return resposta.code(404).send({ erro: 'Tópico não encontrado.' });
+
+    await registrar(id, autor, 'restaurou', { ...versao.data, blocos });
+    return { topico: await abrirTopico(id), imagensPerdidas };
   });
 }

@@ -74,6 +74,7 @@ export async function rotasPublicas(app: FastifyInstance) {
         slug: modulo.slug,
         titulo: modulo.titulo,
         descricao: modulo.descricao,
+        subtitulo: modulo.subtitulo,
         icone: modulo.icone,
       })
       .from(modulo)

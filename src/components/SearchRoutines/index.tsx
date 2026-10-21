@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { getJson } from '../../api/client';
+import { registrarBuscaVazia } from '../../api/metricas';
 import { parseSearch, type BuscaResposta, type SearchHit } from '../../api/helpCenter';
 import styles from './styles.module.css';
 
@@ -9,6 +10,8 @@ const MAX_SUGGESTIONS = 6;
 /** Espera a pessoa parar de digitar antes de consultar a API. */
 const DEBOUNCE_MS = 250;
 const MIN_CHARS = 2;
+/** Uma busca sem resultado só é registrada se a pessoa parar de digitar por este tempo. */
+const REGISTRO_MS = 1500;
 
 /** Resposta da busca, guardada junto do termo a que pertence. */
 type Result = { term: string; hits: SearchHit[]; failed: boolean };
@@ -55,6 +58,21 @@ export default function SearchRoutines() {
   const searching = current === null;
 
   const showList = open && term.length >= MIN_CHARS;
+
+  // Registra o que foi procurado e não existe, para a equipe saber o que
+  // escrever. Só termos "parados" (não cada letra digitada), uma vez cada.
+  const registrados = useRef(new Set<string>());
+  const semResultado =
+    current !== null && !current.failed && current.hits.length === 0 && term.length >= 3;
+
+  useEffect(() => {
+    if (!semResultado || registrados.current.has(term)) return;
+    const timer = window.setTimeout(() => {
+      registrados.current.add(term);
+      registrarBuscaVazia(term);
+    }, REGISTRO_MS);
+    return () => window.clearTimeout(timer);
+  }, [semResultado, term]);
 
   function select(suggestion: SearchHit) {
     setOpen(false);

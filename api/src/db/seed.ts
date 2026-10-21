@@ -19,6 +19,7 @@ type Conteudo = {
     slug: string;
     titulo: string;
     descricao: string;
+    subtitulo: string | null;
     icone: string;
     ordem: number;
     visivel: boolean;
@@ -59,6 +60,7 @@ async function executar() {
           titulo: valores.titulo,
           tituloBusca: valores.tituloBusca,
           descricao: valores.descricao,
+          subtitulo: valores.subtitulo,
           icone: valores.icone,
           ordem: valores.ordem,
           visivel: valores.visivel,

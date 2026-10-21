@@ -10,6 +10,7 @@ import { conexao } from './db/index.js';
 import { garantirPastaDeUploads, TAMANHO_MAXIMO_BYTES } from './lib/uploads.js';
 import { rotasAdmin } from './rotas/admin.js';
 import { rotasAuth } from './rotas/auth.js';
+import { rotasMetricas } from './rotas/metricas.js';
 import { rotasPublicas } from './rotas/publico.js';
 
 const app = Fastify({ logger: true, trustProxy: env.TRUST_PROXY });
@@ -95,6 +96,7 @@ app.get('/api/saude', async (_requisicao, resposta) => {
 
 await app.register(rotasPublicas);
 await app.register(rotasAuth);
+await app.register(rotasMetricas);
 await app.register(rotasAdmin);
 
 await app.listen({ port: env.PORT, host: env.HOST });

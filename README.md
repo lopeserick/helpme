@@ -60,14 +60,13 @@ src/
 │   ├── Header/              # Topo com título e campo de busca
 │   ├── CategoryCard/        # Linha de categoria (a linha inteira é um link)
 │   ├── CategoryIcon/        # Converte o nome do ícone em componente
-│   ├── Index/               # Lista "Rotinas mais acessadas"
-│   ├── ModuleTopics/        # Busca os tópicos de um módulo e os exibe
+│   ├── Index/               # Lista "Rotinas mais acessadas" (da API)
 │   ├── NewsAlert/           # Alerta de novidades do ERP, na Home
 │   ├── PageHeader/          # Faixa verde do topo (Home e páginas internas)
 │   ├── PageShell/           # Estrutura das páginas internas (voltar + título)
 │   ├── RoutineTopics/       # Tópicos de rotina recolhíveis (texto e imagem)
 │   └── SearchRoutines/      # Busca com sugestões de rotinas
-├── pages/                   # Uma pasta por rota
+├── pages/                   # Home, Module (qualquer módulo), NotFound e Admin/
 └── styles/
     ├── theme.css            # Todas as cores, raios e sombras (variáveis)
     └── global.css           # Reset, corpo, container e foco
@@ -78,16 +77,14 @@ src/
 | Rota                | Página             | Estado               |
 | ------------------- | ------------------ | -------------------- |
 | `/`                 | Home               | Pronta               |
-| `/estoque`          | Gestão de Estoque  | Tópicos da API       |
-| `/financeiro`       | Financeiro         | Tópicos da API       |
-| `/sintegra`         | Sintegra           | Tópicos da API       |
-| `/primeiros-passos` | Primeiros Passos   | Tópicos da API       |
-| `/novidades`        | O que há de novo   | Acessível pelo alerta da Home |
-| `/relatorios`       | Relatórios         | Tópicos da API       |
+| `/:modulo`          | Página do módulo (`/estoque`, `/relatorios`, `/novidades`...) | Uma página só para todos, lida da API |
 | `/admin/login`      | Entrar no painel   | Pronta               |
 | `/admin/cadastro`   | Criar conta        | Exige o código de cadastro |
 | `/admin`            | Lista de passo a passo | Exige login      |
-| `/admin/topicos/novo` e `/admin/topicos/:id` | Editor | Exige login |
+| `/admin/topicos/novo` e `/admin/topicos/:id` | Editor, com histórico | Exige login |
+| `/admin/modulos`    | Módulos            | Exige login          |
+| `/admin/metricas`   | Métricas           | Exige login          |
+| `/admin/imagens`    | Imagens sem uso    | Exige login          |
 | qualquer outra      | Página não encontrada | Pronta            |
 
 ## Painel de edição
@@ -108,19 +105,32 @@ Ela é reduzida para 1600 px de largura e convertida para WebP, e você precisa
 descrever o que ela mostra (texto para quem usa leitor de tela). Telas em
 `src/pages/Admin/`, sessão em `src/admin/`.
 
+O painel tem quatro seções:
+
+- **Passo a passo:** lista e editor. No fim do editor fica o **Histórico**:
+  quem criou, editou, publicou ou tirou do site, e quando. As versões salvas a
+  partir da fase 4 têm o botão **Restaurar**, que volta título, rótulo e blocos
+  para aquela versão (o conteúdo de antes fica guardado no histórico).
+- **Módulos:** criar, editar, mostrar ou ocultar da Home e mudar a ordem. O
+  endereço sai do título na criação ("NFC-e" vira `/nfc-e`) e não muda depois.
+  Não há exclusão, só ocultar.
+- **Métricas:** buscas sem resultado, "Esta resposta ajudou?" e os mais
+  abertos, nos últimos 7, 30 ou 90 dias.
+- **Imagens:** as que nenhum passo a passo usa, para apagar e liberar espaço.
+
 ## Onde o conteúdo é cadastrado
 
 O site público só exibe. Módulos, tópicos, imagens e avisos vêm do banco, pela
-API. Tópicos e imagens se cadastram pelo painel; módulos novos ainda entram
-pelo `seed` (`api/src/db/conteudo-inicial.json`) ou direto no banco.
+API, e tudo se cadastra pelo painel. O `seed` (`api/src/db/conteudo-inicial.json`)
+só serve para começar um banco vazio.
 
 - **Categoria da Home:** é um módulo visível na API. O `icone` precisa ser um
   dos nomes de `components/CategoryIcon` (`database`, `dollar`, `book`,
   `star`, `chart`); um nome desconhecido cai no ícone de livro.
-- **Página de um módulo:** crie `src/pages/<Nome>/index.tsx` com `PageShell` e
-  `<ModuleTopics slug="<slug-do-modulo>" />`, e registre a rota em
-  `src/App.tsx`. O caminho da página precisa ser igual ao slug do módulo
-  (`/estoque` ↔ `estoque`), porque a busca e o alerta montam os links assim.
+- **Página de um módulo:** é uma só (`src/pages/Module`), na rota `/:slug`.
+  Ela busca `/api/modulos/:slug` e mostra título, subtítulo (ou a descrição)
+  e os tópicos. Módulo criado no painel já tem página; slug inexistente mostra
+  "Página não encontrada".
 - **Tópico:** lista de blocos de texto e imagem. O `alt` das imagens é
   obrigatório na API, porque descreve a imagem para leitor de tela.
 - **Imagens:** ficam em disco, na pasta `UPLOADS_DIR` da API (veja
@@ -144,6 +154,19 @@ sugestão, a pessoa vai para a página com o id do tópico no endereço
 por alguns segundos. Qualquer endereço nesse formato pode ser compartilhado e
 abre direto no tópico certo.
 
+## Métricas
+
+O site registra, sem guardar IP nem nada que identifique quem acessou (só
+contagens por dia):
+
+- **Abertura de tópico:** uma por tópico enquanto a página está aberta, não a
+  cada clique. Os 4 mais abertos dos últimos 30 dias viram "Rotinas mais
+  acessadas" na Home; sem acessos ainda, essa lista não aparece.
+- **"Esta resposta ajudou?"** no fim de cada tópico. O navegador lembra o voto
+  para não perguntar de novo.
+- **Busca sem resultado:** só depois que a pessoa para de digitar por 1,5 s, e
+  com ao menos 3 letras, para não registrar cada letra.
+
 ## Tema
 
 Toda cor, raio e sombra vem de `src/styles/theme.css`. Se uma variável não
@@ -151,11 +174,10 @@ existe nesse arquivo, ela não deve ser usada nos componentes.
 
 ## Pendências conhecidas
 
-- O painel não tem histórico de alterações na tela, troca de módulo de um
-  tópico, redefinição de senha nem gestão de contas (a API já grava o histórico
-  em `alteracao`).
-- "Rotinas mais acessadas" (Home) ainda é uma lista fixa no código: a API não
-  registra acessos.
+- O painel não tem troca de módulo de um tópico, redefinição de senha nem
+  gestão de contas.
+- O histórico só permite restaurar versões salvas a partir da fase 4; as
+  anteriores mostram apenas quem fez o quê e quando.
 - Não há testes automatizados nem integração contínua.
 - `npm audit` aponta 2 avisos que afetam apenas o servidor de desenvolvimento
   (Vite 5 / esbuild); corrigir exige subir o Vite de versão principal.
