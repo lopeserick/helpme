@@ -56,7 +56,7 @@ export default function ModuloForm({ modulo, onSalvo, onCancelar }: Props) {
     <section className={`${forms.card} ${styles.formulario}`} aria-label="Dados do módulo">
       <h2 className={styles.subtitulo}>{modulo ? `Editar ${modulo.titulo}` : 'Novo módulo'}</h2>
 
-      <form className={forms.form} onSubmit={handleSubmit} noValidate>
+      <form className={forms.form} onSubmit={handleSubmit} noValidate lang="pt-BR" spellCheck>
         {erro && (
           <p className={forms.error} role="alert">
             {erro}
