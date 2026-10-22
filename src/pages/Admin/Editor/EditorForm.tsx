@@ -314,10 +314,7 @@ export default function EditorForm({
       back={{ to: '/admin', label: 'Voltar para a lista' }}
       onBack={aoVoltar}
     >
-      {/* Corretor ortográfico do navegador em português, mesmo que o navegador esteja em outro idioma. */}
       <form
-        lang="pt-BR"
-        spellCheck
         className={styles.layout}
         onSubmit={(event) => {
           event.preventDefault();
