@@ -1,0 +1,101 @@
+.search {
+  position: relative;
+  max-width: 640px;
+  margin-top: 32px;
+}
+
+.search input {
+  width: 100%;
+  height: 56px;
+  padding: 0 20px 0 52px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.0625rem;
+  box-shadow: var(--shadow-search);
+}
+
+.search input::placeholder {
+  color: var(--ink-muted);
+}
+
+.search input:focus-visible {
+  outline: none;
+  border-color: var(--mark);
+  box-shadow:
+    0 0 0 4px rgb(212 242 106 / 0.35),
+    var(--shadow-search);
+}
+
+.icon {
+  position: absolute;
+  left: 18px;
+  top: 28px;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  color: var(--brand-800);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Sugestões */
+.list {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-search);
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 12px 20px;
+  border: 0;
+  background: none;
+  /* Cor explícita: dentro da faixa verde, "inherit" traria o texto claro */
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option + .option,
+.list li + li .option {
+  border-top: 1px solid var(--line);
+}
+
+.active {
+  background: var(--brand-50);
+}
+
+.option:focus-visible {
+  outline-offset: -3px;
+}
+
+.optionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.optionPage {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+.empty {
+  padding: 14px 20px;
+  color: var(--ink-muted);
+}

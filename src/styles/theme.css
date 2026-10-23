@@ -1,22 +1,35 @@
+/*
+ * Tema único do projeto. Toda cor, raio e sombra usada nos componentes
+ * vem daqui; se uma variável não existe neste arquivo, ela não deve ser usada.
+ */
 :root {
-  /* PRIMARY */
-  --blue: #2563eb;
-  --blue-light: #3b82f6;
-  --blue-dark: #1e40af;
-  --green: #7FFF00;
-  --green-strong: #32CD32;
-  --green-neutral: #228B22;
-  --dark-green: #006400;
+  /* Marca: o verde do ERP, mais profundo, com um destaque de marca-texto */
+  --brand-900: #083b2a;
+  --brand-800: #0d5239;
+  --brand-700: #146c47;
+  --brand-600: #1b8a58;
+  --brand-500: #22a367;
+  --brand-100: #d7f0e2;
+  --brand-50: #eef8f2;
+  --mark: #d4f26a;
 
-  /* NEUTRAL */
-  --white: #f9fafb;
-  --white-less: #f3f4f6;
-  --grey: #4b5563;
-  --dark-grey: #1f2937;
+  /* Neutros (levemente esverdeados, para conversar com a marca) */
+  --ink: #1b2b23;
+  --ink-muted: #52645a;
+  --line: #d9e4dd;
+  --paper: #f4f8f5;
+  --surface: #ffffff;
+  --surface-muted: #eef1ef;
 
-  /* SHADOWS */
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
-  --shadow-lg: 0 10px 20px rgba(0,0,0,0.12);
+  /* Tipografia */
+  --font-sans: 'Schibsted Grotesk Variable', system-ui, -apple-system,
+    'Segoe UI', Roboto, Arial, sans-serif;
 
-  --radius-lg: 12px;
+  /* Forma */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Sombra (usada só no campo de busca, que é o foco da página) */
+  --shadow-search: 0 12px 32px rgb(3 30 20 / 0.28);
 }

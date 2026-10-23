@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="Espaço reservado para uma captura de tela">
+  <rect width="800" height="450" fill="#eef1ef"/>
+  <rect x="0" y="0" width="800" height="44" fill="#0d5239"/>
+  <circle cx="26" cy="22" r="6" fill="#d7f0e2" opacity="0.5"/>
+  <circle cx="46" cy="22" r="6" fill="#d7f0e2" opacity="0.5"/>
+  <circle cx="66" cy="22" r="6" fill="#d7f0e2" opacity="0.5"/>
+  <rect x="0" y="44" width="180" height="406" fill="#e2e8e4"/>
+  <g fill="#c3d2c9">
+    <rect x="20" y="76" width="140" height="12" rx="6"/>
+    <rect x="20" y="108" width="110" height="12" rx="6"/>
+    <rect x="20" y="140" width="130" height="12" rx="6"/>
+    <rect x="20" y="172" width="96" height="12" rx="6"/>
+  </g>
+  <g fill="#d7ddd9">
+    <rect x="212" y="80" width="300" height="18" rx="9"/>
+    <rect x="212" y="124" width="556" height="64" rx="10"/>
+    <rect x="212" y="204" width="556" height="64" rx="10"/>
+    <rect x="212" y="284" width="556" height="64" rx="10"/>
+  </g>
+  <text x="400" y="406" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" fill="#52645a">
+    Espaço para a captura de tela do Acesse
+  </text>
+</svg>

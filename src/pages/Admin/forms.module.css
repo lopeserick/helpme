@@ -1,0 +1,153 @@
+/* Formulários, botões e avisos compartilhados pelas telas do painel. */
+
+.card {
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.hint {
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.input:focus-visible,
+.textarea:focus-visible,
+.select:focus-visible {
+  outline: 3px solid var(--brand-500);
+  outline-offset: 1px;
+  border-color: var(--brand-600);
+}
+
+.textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.input:disabled,
+.select:disabled {
+  background: var(--surface-muted);
+  color: var(--ink-muted);
+}
+
+.error,
+.notice {
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--brand-700);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.notice {
+  border-left-color: var(--mark);
+  background: var(--brand-50);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.primary,
+.secondary,
+.danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.primary {
+  border: 1px solid var(--brand-700);
+  background: var(--brand-800);
+  color: var(--paper);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--brand-700);
+}
+
+.secondary {
+  border: 1px solid var(--brand-700);
+  background: var(--surface);
+  color: var(--brand-800);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--brand-50);
+}
+
+.danger {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.danger:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.primary:disabled,
+.secondary:disabled,
+.danger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.primary svg,
+.secondary svg,
+.danger svg {
+  width: 18px;
+  height: 18px;
+}
+
+.alt {
+  margin-top: 20px;
+  color: var(--ink-muted);
+}
+
+.alt a {
+  color: var(--brand-800);
+  font-weight: 600;
+}

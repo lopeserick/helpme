@@ -1,0 +1,56 @@
+// Carrega o .env antes de qualquer leitura de process.env. Fica aqui, e não
+// num parâmetro de linha de comando, para valer em toda entrada da aplicação:
+// servidor, seed e qualquer script futuro.
+import 'dotenv/config';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { z } from 'zod';
+
+/**
+ * Configuração lida do ambiente. Se faltar algo, a API para na subida com
+ * uma mensagem clara, em vez de quebrar no meio de uma requisição.
+ */
+const faltaEnv = 'não definida. Copie o .env.example para .env (veja o README).';
+
+const schema = z.object({
+  DATABASE_URL: z.string({ error: faltaEnv }).min(1, faltaEnv),
+  PORT: z.coerce.number().int().positive().default(3000),
+  HOST: z.string().default('0.0.0.0'),
+  /** Endereços do site autorizados a chamar a API, separados por vírgula. */
+  CORS_ORIGINS: z.string().default('http://localhost:3000,http://localhost:5173'),
+  /**
+   * Código que a pessoa precisa informar para criar uma conta no painel. Sem
+   * ele definido o cadastro fica desligado: nunca é aberto a qualquer um.
+   */
+  CODIGO_CADASTRO: z.string().trim().min(6, 'use ao menos 6 caracteres').optional(),
+  /**
+   * Pasta onde ficam as imagens enviadas pelo painel. Em produção, use um caminho
+   * absoluto fora do código (ex.: D:\\helpme\\uploads) e inclua no backup. Vazio:
+   * usa a pasta `uploads` dentro de `api/`.
+   */
+  UPLOADS_DIR: z.string().trim().min(1).optional(),
+  /** Quanto tempo a pessoa fica logada, em horas. */
+  SESSAO_HORAS: z.coerce.number().positive().default(12),
+  /** Ligue (true) quando o site for servido por HTTPS: o cookie só viaja criptografado. */
+  COOKIE_SECURE: z.stringbool().default(false),
+  /** Ligue (true) atrás do IIS, para o limite de tentativas enxergar o IP real. */
+  TRUST_PROXY: z.stringbool().default(false),
+});
+
+const resultado = schema.safeParse(process.env);
+
+if (!resultado.success) {
+  const problemas = resultado.error.issues
+    .map((i) => `  - ${i.path.join('.')}: ${i.message}`)
+    .join('\n');
+  console.error(`Configuração inválida:\n${problemas}`);
+  process.exit(1);
+}
+
+export const env = {
+  ...resultado.data,
+  uploadsDir: resultado.data.UPLOADS_DIR
+    ? resolve(resultado.data.UPLOADS_DIR)
+    : fileURLToPath(new URL('../uploads', import.meta.url)),
+  corsOrigins: resultado.data.CORS_ORIGINS.split(',').map((o) => o.trim()),
+};

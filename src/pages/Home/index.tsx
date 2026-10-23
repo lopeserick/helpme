@@ -1,60 +1,66 @@
 import Header from '../../components/Header';
+import AsyncContent from '../../components/AsyncContent';
 import CategoryCard from '../../components/CategoryCard';
-import './home.css';
+import CategoryIcon from '../../components/CategoryIcon';
 import Index from '../../components/Index';
-import { CircleDollarSign, Database, CircleStar, BookOpenText } from 'lucide-react';
-
-
+import NewsAlert from '../../components/NewsAlert';
+import {
+  parseCategories,
+  parsePopular,
+  type MaisAcessadosResposta,
+  type ModulosResposta,
+} from '../../api/helpCenter';
+import { useApi } from '../../api/useApi';
+import './home.css';
 
 export default function Home() {
+  const { data, error, loading, retry } = useApi<
+    ModulosResposta,
+    ReturnType<typeof parseCategories>
+  >('/api/modulos', parseCategories);
 
-  const routines = [
-    "Como cadastrar produto",
-    "Emitir nota fiscal",
-    "Gerar relatório mensal",
-    "Configurar formas de pagamento"
-  ];  
+  // Os mais abertos nos últimos 30 dias. Sem dados ainda, ou com erro, a lista
+  // simplesmente não aparece: é um atalho, não o conteúdo principal.
+  const populares = useApi<MaisAcessadosResposta, ReturnType<typeof parsePopular>>(
+    '/api/mais-acessados?limite=4',
+    parsePopular,
+  );
 
   return (
     <>
       <Header />
 
-      <section className="container categories">
-        <h2>Categorias</h2>
+      <main className="container home">
+        <NewsAlert />
 
-        <div className="grid">
-          <CategoryCard
-            title="Gestão de Estoque"
-            description="Gerencie produtos e movimentações"
-            icon = {<Database />}
-            to = '/Estoque'
-          />
+        <section>
+          <h2 className="home-heading">Categorias</h2>
 
-          <CategoryCard
-            title="Financeiro"
-            description="Controle de contas e fluxo de caixa"
-            icon = {<CircleDollarSign />}
-            to = '/Estoque'
-          />
-          <CategoryCard
-            title="Sintegra"
-            description="Arquivos e Relatórios Fiscais"
-            icon = {<BookOpenText />}
-            to = '/Estoque'
-          />
-          
-          <CategoryCard
-            title="Primeiros Passos"
-            description="Como realizar as rotinas básicas do Acesse Brasil"
-            icon ={<CircleStar />}
-            to = '/Estoque'
-          />
+          <AsyncContent
+            loading={loading}
+            error={error}
+            onRetry={retry}
+            loadingLabel="Carregando as categorias…"
+            empty={data?.length === 0}
+            emptyLabel="Ainda não há categorias publicadas."
+          >
+            <ul className="category-list">
+              {data?.map((category) => (
+                <li key={category.id}>
+                  <CategoryCard
+                    title={category.title}
+                    description={category.description}
+                    icon={<CategoryIcon name={category.icon} />}
+                    to={category.path}
+                  />
+                </li>
+              ))}
+            </ul>
+          </AsyncContent>
+        </section>
 
-        </div>
-      </section> 
-      
-      <Index items={routines} />
-
+        {populares.data && populares.data.length > 0 && <Index items={populares.data} />}
+      </main>
     </>
   );
 }

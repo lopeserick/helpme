@@ -1,0 +1,43 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand-100);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--mark);
+}
+
+.back svg {
+  width: 18px;
+  height: 18px;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.description {
+  max-width: 640px;
+  margin-top: 10px;
+  font-size: 1.0625rem;
+  color: var(--brand-100);
+}
+
+.content {
+  padding-top: 40px;
+  padding-bottom: 96px;
+}
+
+.note {
+  max-width: 65ch;
+  color: var(--ink-muted);
+}

@@ -1,0 +1,404 @@
+{
+  "imagens": [
+    {
+      "id": "f1f936aa-fed9-4c58-8d5e-a6b4cb257725",
+      "arquivo": "tela-exemplo.svg",
+      "mime": "image/svg+xml",
+      "bytes": 0
+    }
+  ],
+  "modulos": [
+    {
+      "slug": "estoque",
+      "titulo": "Gestão de Estoque",
+      "descricao": "Gerencie produtos e movimentações",
+      "subtitulo": "Produtos, entradas, inventário e transferências entre filiais.",
+      "icone": "database",
+      "ordem": 0,
+      "visivel": true
+    },
+    {
+      "slug": "financeiro",
+      "titulo": "Financeiro",
+      "descricao": "Controle de contas e fluxo de caixa",
+      "subtitulo": "Contas a pagar, baixa de títulos, conciliação e fluxo de caixa.",
+      "icone": "dollar",
+      "ordem": 1,
+      "visivel": true
+    },
+    {
+      "slug": "sintegra",
+      "titulo": "Sintegra",
+      "descricao": "Arquivos e Relatórios Fiscais",
+      "subtitulo": "Geração, validação e correção do arquivo fiscal.",
+      "icone": "book",
+      "ordem": 2,
+      "visivel": true
+    },
+    {
+      "slug": "primeiros-passos",
+      "titulo": "Primeiros Passos",
+      "descricao": "Como realizar as rotinas básicas do Acesse",
+      "subtitulo": "O básico para começar a usar o Acesse no dia a dia.",
+      "icone": "star",
+      "ordem": 3,
+      "visivel": true
+    },
+    {
+      "slug": "novidades",
+      "titulo": "O que há de novo",
+      "descricao": "Rotinas, programas e validações fiscais implantados no Acesse",
+      "subtitulo": "Rotinas, programas e validações fiscais implantados no Acesse, do mais recente para o mais antigo.",
+      "icone": "star",
+      "ordem": 4,
+      "visivel": false
+    },
+    {
+      "slug": "relatorios",
+      "titulo": "Relatórios",
+      "descricao": "Vendas, curva ABC e demais análises do sistema",
+      "subtitulo": "Vendas, curva ABC e demais análises do sistema.",
+      "icone": "chart",
+      "ordem": 5,
+      "visivel": true
+    }
+  ],
+  "topicos": [
+    {
+      "modulo": "estoque",
+      "slug": "cadastrar-produto",
+      "titulo": "Como cadastrar um produto",
+      "tag": null,
+      "ordem": 0,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Acesse o menu Estoque e escolha Produtos. Clique em Novo para abrir a ficha em branco."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Preencha descrição, unidade de medida e NCM. A descrição é o que aparece na nota fiscal, então use o mesmo padrão do catálogo."
+        },
+        {
+          "tipo": "imagem",
+          "imagemId": "f1f936aa-fed9-4c58-8d5e-a6b4cb257725",
+          "alt": "Tela de cadastro de produto do Acesse",
+          "legenda": "Substitua por uma captura de tela do Acesse."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Salve com F9. O código do produto é gerado automaticamente e não pode ser alterado depois."
+        }
+      ]
+    },
+    {
+      "modulo": "estoque",
+      "slug": "entrada-por-nota",
+      "titulo": "Lançar entrada de mercadoria por nota",
+      "tag": null,
+      "ordem": 1,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Estoque, abra Entradas e importe o XML da nota do fornecedor. Os itens já chegam preenchidos."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Confira a relação entre o código do fornecedor e o seu código interno antes de confirmar: é o que evita produto duplicado no catálogo."
+        }
+      ]
+    },
+    {
+      "modulo": "estoque",
+      "slug": "inventario",
+      "titulo": "Fazer inventário e ajustar saldo",
+      "tag": null,
+      "ordem": 2,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Gere a lista de contagem em Estoque > Inventário, imprima e faça a contagem física."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Lance as quantidades contadas e confirme. O sistema cria o ajuste de saldo e guarda o histórico da diferença."
+        }
+      ]
+    },
+    {
+      "modulo": "estoque",
+      "slug": "transferencia-entre-filiais",
+      "titulo": "Transferir produtos entre filiais",
+      "tag": null,
+      "ordem": 3,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Use Estoque > Transferências, escolha a filial de origem e a de destino e informe os itens."
+        },
+        {
+          "tipo": "texto",
+          "texto": "A baixa na origem só acontece quando a filial de destino confirma o recebimento."
+        }
+      ]
+    },
+    {
+      "modulo": "financeiro",
+      "slug": "contas-a-pagar",
+      "titulo": "Cadastrar uma conta a pagar",
+      "tag": null,
+      "ordem": 0,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Financeiro > Contas a pagar, clique em Novo, informe o fornecedor, o valor e o vencimento."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Se a despesa se repete todo mês, marque como recorrente: o Acesse gera as parcelas seguintes sozinho."
+        }
+      ]
+    },
+    {
+      "modulo": "financeiro",
+      "slug": "baixa-de-titulo",
+      "titulo": "Dar baixa em um título",
+      "tag": null,
+      "ordem": 1,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Localize o título em aberto, clique em Baixar e informe a data do pagamento e a conta usada."
+        },
+        {
+          "tipo": "imagem",
+          "imagemId": "f1f936aa-fed9-4c58-8d5e-a6b4cb257725",
+          "alt": "Tela de baixa de título do Acesse",
+          "legenda": "Substitua por uma captura de tela do Acesse."
+        }
+      ]
+    },
+    {
+      "modulo": "financeiro",
+      "slug": "conciliacao-bancaria",
+      "titulo": "Conciliar o extrato bancário",
+      "tag": null,
+      "ordem": 2,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Importe o arquivo OFX do banco em Financeiro > Conciliação. O sistema sugere os lançamentos equivalentes."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Confira as sugestões antes de confirmar: lançamentos de mesmo valor no mesmo dia podem ser trocados entre si."
+        }
+      ]
+    },
+    {
+      "modulo": "financeiro",
+      "slug": "fluxo-de-caixa",
+      "titulo": "Consultar o fluxo de caixa",
+      "tag": null,
+      "ordem": 3,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Financeiro > Fluxo de caixa, escolha o período e se quer ver valores previstos, realizados ou os dois."
+        }
+      ]
+    },
+    {
+      "modulo": "sintegra",
+      "slug": "gerar-arquivo",
+      "titulo": "Gerar o arquivo do Sintegra",
+      "tag": null,
+      "ordem": 0,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Fiscal > Sintegra, informe o mês de referência e a finalidade do arquivo, e clique em Gerar."
+        },
+        {
+          "tipo": "texto",
+          "texto": "O arquivo é salvo na pasta configurada em Parâmetros fiscais. Gere sempre depois de fechar o movimento do mês."
+        }
+      ]
+    },
+    {
+      "modulo": "sintegra",
+      "slug": "validar-arquivo",
+      "titulo": "Validar o arquivo antes de enviar",
+      "tag": null,
+      "ordem": 1,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Abra o validador da Sefaz e carregue o arquivo gerado. Erros de cadastro aparecem com a linha correspondente."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Os problemas mais comuns são inscrição estadual e NCM em branco no cadastro do produto."
+        }
+      ]
+    },
+    {
+      "modulo": "sintegra",
+      "slug": "corrigir-rejeicao",
+      "titulo": "Corrigir uma rejeição e regerar",
+      "tag": null,
+      "ordem": 2,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Corrija o cadastro apontado pelo validador, volte em Fiscal > Sintegra e gere o arquivo de novo para o mesmo período."
+        }
+      ]
+    },
+    {
+      "modulo": "primeiros-passos",
+      "slug": "primeiro-acesso",
+      "titulo": "Primeiro acesso ao Acesse",
+      "tag": null,
+      "ordem": 0,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Use o usuário e a senha enviados pelo suporte. No primeiro acesso o sistema pede a troca da senha."
+        },
+        {
+          "tipo": "imagem",
+          "imagemId": "f1f936aa-fed9-4c58-8d5e-a6b4cb257725",
+          "alt": "Tela de login do Acesse",
+          "legenda": "Substitua por uma captura de tela do Acesse."
+        }
+      ]
+    },
+    {
+      "modulo": "primeiros-passos",
+      "slug": "conhecer-menus",
+      "titulo": "Entender os menus principais",
+      "tag": null,
+      "ordem": 1,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "O menu lateral separa as áreas: Cadastros, Estoque, Vendas, Financeiro e Fiscal. Cada área guarda as rotinas do dia a dia."
+        }
+      ]
+    },
+    {
+      "modulo": "primeiros-passos",
+      "slug": "cadastrar-usuario",
+      "titulo": "Cadastrar um novo usuário",
+      "tag": null,
+      "ordem": 2,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Configurações > Usuários, clique em Novo, informe nome e e-mail e escolha o perfil de permissões."
+        },
+        {
+          "tipo": "texto",
+          "texto": "O perfil define quais menus a pessoa enxerga. Comece pelo mais restrito e vá liberando conforme a necessidade."
+        }
+      ]
+    },
+    {
+      "modulo": "novidades",
+      "slug": "validacao-cst-nfe",
+      "titulo": "Nova validação de CST na emissão de NF-e",
+      "tag": "Validação fiscal",
+      "ordem": 0,
+      "publicadoEm": "2026-10-14T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "A emissão passa a recusar notas com CST incompatível com o regime tributário da empresa. Antes o erro só aparecia na rejeição da Sefaz."
+        },
+        {
+          "tipo": "texto",
+          "texto": "Se a nota for recusada, confira o CST no cadastro do produto e a tributação do cliente antes de tentar de novo."
+        }
+      ]
+    },
+    {
+      "modulo": "novidades",
+      "slug": "conferencia-por-leitor",
+      "titulo": "Conferência de recebimento por leitor de código de barras",
+      "tag": "Rotina nova",
+      "ordem": 1,
+      "publicadoEm": "2026-10-06T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Estoque > Entradas, a conferência agora aceita leitor de código de barras: cada bipe soma uma unidade no item correspondente."
+        },
+        {
+          "tipo": "texto",
+          "texto": "A entrada só é concluída quando a contagem bate com a nota; as diferenças ficam registradas para consulta."
+        }
+      ]
+    },
+    {
+      "modulo": "novidades",
+      "slug": "painel-de-pedidos",
+      "titulo": "Painel de acompanhamento de pedidos no workspace",
+      "tag": "Programa novo",
+      "ordem": 2,
+      "publicadoEm": "2026-09-29T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "O painel mostra os pedidos em aberto por situação (separação, faturamento e entrega), atualizando sozinho."
+        },
+        {
+          "tipo": "texto",
+          "texto": "O acesso é liberado por perfil de usuário, em Configurações > Usuários."
+        }
+      ]
+    },
+    {
+      "modulo": "relatorios",
+      "slug": "relatorio-de-vendas",
+      "titulo": "Gerar o relatório de vendas do mês",
+      "tag": null,
+      "ordem": 0,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Relatórios > Vendas, escolha o período, o vendedor e a filial. Dá para exportar em PDF ou planilha."
+        }
+      ]
+    },
+    {
+      "modulo": "relatorios",
+      "slug": "curva-abc",
+      "titulo": "Montar a curva ABC de produtos",
+      "tag": null,
+      "ordem": 1,
+      "publicadoEm": "2026-10-17T12:00:00-03:00",
+      "blocos": [
+        {
+          "tipo": "texto",
+          "texto": "Em Relatórios > Curva ABC, escolha se o critério é faturamento ou quantidade vendida e informe o período."
+        }
+      ]
+    }
+  ]
+}
