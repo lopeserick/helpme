@@ -8,6 +8,29 @@ export interface Usuario {
   id: number;
   nome: string;
   email: string;
+  /** Se a conta já tem a verificação em duas etapas ligada. */
+  doisFatores: boolean;
+}
+
+/** Resposta do login: entrou, ou falta o código da verificação em duas etapas. */
+export type RespostaLogin = { usuario: Usuario } | { etapa: 'codigo' };
+
+export interface Conta {
+  nome: string;
+  email: string;
+  doisFatores: boolean;
+  exige2fa: boolean;
+  doisFatoresDisponivel: boolean;
+}
+
+export interface EventoAcesso {
+  id: number;
+  evento: string;
+  email: string | null;
+  nome: string | null;
+  ip: string | null;
+  navegador: string | null;
+  em: string;
 }
 
 export type Situacao = 'publicado' | 'rascunho';
@@ -147,7 +170,10 @@ export const parseTopicos = (raw: TopicosAdminResposta) => raw.topicos;
 export const parseTopico = (raw: TopicoAdminResposta) => raw.topico;
 
 export const entrar = (email: string, senha: string) =>
-  sendJson<{ usuario: Usuario }>('POST', '/api/auth/login', { email, senha });
+  sendJson<RespostaLogin>('POST', '/api/auth/login', { email, senha });
+
+export const enviarCodigoLogin = (codigo: string) =>
+  sendJson<{ usuario: Usuario }>('POST', '/api/auth/codigo', { codigo });
 
 export const criarConta = (dados: {
   nome: string;
@@ -159,7 +185,22 @@ export const criarConta = (dados: {
 export const sair = () => sendJson('POST', '/api/auth/logout');
 
 export const usuarioAtual = (signal?: AbortSignal) =>
-  getJson<{ usuario: Usuario }>('/api/auth/eu', signal);
+  getJson<{ usuario: Usuario; exige2fa: boolean }>('/api/auth/eu', signal);
+
+export const parseConta = (raw: { conta: Conta }) => raw.conta;
+export const parseAcessos = (raw: { acessos: EventoAcesso[] }) => raw.acessos;
+
+export const trocarSenha = (atual: string, nova: string) =>
+  sendJson('POST', '/api/admin/senha', { atual, nova });
+
+export const iniciar2fa = (senha: string) =>
+  sendJson<{ segredo: string; qrCode: string }>('POST', '/api/admin/2fa/iniciar', { senha });
+
+export const confirmar2fa = (codigo: string) =>
+  sendJson('POST', '/api/admin/2fa/confirmar', { codigo });
+
+export const desativar2fa = (senha: string, codigo: string) =>
+  sendJson('POST', '/api/admin/2fa/desativar', { senha, codigo });
 
 export async function criarTopico(moduloId: number, dados: TopicoEntrada) {
   const r = await sendJson<TopicoAdminResposta>('POST', '/api/admin/topicos', {

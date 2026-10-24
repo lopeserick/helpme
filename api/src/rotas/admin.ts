@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { exigirLogin } from '../lib/sessao.js';
+import { rotasAdminConta } from './admin-conta.js';
 import { rotasAdminImagens } from './admin-imagens.js';
 import { rotasAdminMetricas } from './admin-metricas.js';
 import { rotasAdminModulos } from './admin-modulos.js';
@@ -13,6 +14,7 @@ export async function rotasAdmin(app: FastifyInstance) {
   await app.register(async (admin) => {
     admin.addHook('preHandler', exigirLogin);
 
+    await admin.register(rotasAdminConta);
     await admin.register(rotasAdminTopicos);
     await admin.register(rotasAdminImagens);
     await admin.register(rotasAdminModulos);

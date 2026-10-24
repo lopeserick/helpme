@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "dev:painel": "cross-env ALVO=painel vite",
+    "build": "npm run build:site && npm run build:painel",
+    "build:site": "tsc && vite build",
+    "build:painel": "tsc && cross-env ALVO=painel vite build",
     "preview": "vite preview",
     "lint": "eslint ."
   },
@@ -18,9 +21,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.4.26",

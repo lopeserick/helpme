@@ -99,7 +99,7 @@ export default function Topicos() {
           </label>
         </div>
 
-        <Link to="/admin/topicos/novo" className={forms.primary}>
+        <Link to="/topicos/novo" className={forms.primary}>
           <Plus aria-hidden="true" />
           Novo passo a passo
         </Link>
@@ -134,7 +134,7 @@ export default function Topicos() {
                 {visiveis.map((t) => (
                   <tr key={t.id}>
                     <td>
-                      <Link to={`/admin/topicos/${t.id}`} className={styles.titulo}>
+                      <Link to={`/topicos/${t.id}`} className={styles.titulo}>
                         {t.titulo}
                       </Link>
                       {t.tag && <span className={styles.tag}>{t.tag}</span>}

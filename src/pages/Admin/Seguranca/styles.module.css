@@ -1,0 +1,88 @@
+.obrigatoria {
+  margin-bottom: 24px;
+}
+
+.secoes {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 640px;
+}
+
+.secoes > section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.iconeLigado,
+.iconeDesligado {
+  flex: none;
+  width: 32px;
+  height: 32px;
+}
+
+.iconeLigado {
+  color: var(--brand-600);
+}
+
+.iconeDesligado {
+  color: var(--ink-muted);
+}
+
+.subtitulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.mensagens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mensagens:empty {
+  display: none;
+}
+
+.passos {
+  padding-left: 1.25em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.qr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr img {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.segredo {
+  display: flex;
+  flex: 1 1 200px;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.segredo code {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  word-break: break-all;
+}

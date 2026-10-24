@@ -182,8 +182,9 @@ Gestão de módulos e de usuários entra depois; no começo, direto no banco.
 - Senha guardada com hash (argon2 ou bcrypt). Nunca em texto.
 - Login abre uma sessão de 12 horas (configurável) num cookie `HttpOnly`; o
   banco guarda só o hash do token. Senha com scrypt.
-- O `/admin` não deve ficar exposto na internet apenas com senha: o ideal é
-  restringir por rede interna ou VPN no próprio IIS.
+- O painel fica em endereço próprio e, como a equipe o usa de fora da empresa,
+  é protegido por verificação em duas etapas em vez de restrição por rede
+  (veja `seguranca.md`).
 
 ### Envio de imagem
 
@@ -297,6 +298,13 @@ PostgreSQL de teste. No Windows: `git pull`, `npm ci` na raiz e na API,
 
 **Atenção na publicação:** a pasta de imagens (`UPLOADS_DIR`) entra no backup
 junto com o banco, e o IIS precisa servi-la em `/uploads`.
+
+**Branch `security-level`:** painel em endereço próprio (build separado, o
+site público não alcança `/api/admin` nem `/api/auth`), verificação em duas
+etapas, bloqueio por conta, sessão por inatividade, checagem de origem,
+cabeçalhos de segurança, registro de acessos e o comando `npm run usuario`.
+Tudo em [`seguranca.md`](./seguranca.md). A restrição por IP foi descartada:
+a equipe usa o painel de fora da empresa.
 
 **Próximo passo: publicar na VM** (IIS, API como serviço, HTTPS, backup e
 `/admin` só pela rede interna).

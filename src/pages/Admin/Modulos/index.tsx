@@ -10,6 +10,7 @@ import {
   type ModulosAdminResposta,
 } from '../../../api/admin';
 import { useApi } from '../../../api/useApi';
+import { siteUrl } from '../../../lib/enderecos';
 import ModuloForm from './ModuloForm';
 import forms from '../forms.module.css';
 import styles from './styles.module.css';
@@ -134,7 +135,7 @@ export default function Modulos() {
                 </div>
                 <p className={styles.descricao}>{m.descricao}</p>
                 <p className={styles.meta}>
-                  <a href={`/${m.slug}`} target="_blank" rel="noreferrer">
+                  <a href={siteUrl(`/${m.slug}`)} target="_blank" rel="noreferrer">
                     /{m.slug}
                     <ExternalLink aria-hidden="true" />
                   </a>

@@ -18,39 +18,53 @@ Testado com Node 22.
 
 ## Como rodar
 
-O site precisa da API no ar. Com o PostgreSQL e a API configurados (passo a
-passo em [`api/README.md`](api/README.md)), abra dois terminais:
+São três partes: a API, o **site público** e o **painel**, que fica num
+endereço próprio. Com o PostgreSQL e a API configurados (passo a passo em
+[`api/README.md`](api/README.md)), abra três terminais:
 
 ```bash
 # Terminal 1: API em http://localhost:3000
 cd api
 npm run dev
 
-# Terminal 2: site
+# Terminal 2: site público em http://localhost:5173
 npm ci
 npm run dev
+
+# Terminal 3: painel em http://localhost:5174
+npm run dev:painel
 ```
 
-O Vite abre `http://localhost:5173` e repassa `/api` e `/uploads` para a API em
-`localhost:3000` (veja `vite.config.ts`). Se a API estiver em outro endereço,
-crie um arquivo `.env.local` com `VITE_API_URL=http://servidor:3000`.
+Os dois repassam `/api` e `/uploads` para a API (veja `vite.config.ts`). O site
+público, como em produção, **não alcança** `/api/admin` nem `/api/auth`: essas
+rotas só respondem pelo endereço do painel.
 
 Com a API fora do ar, a Home e as páginas mostram uma mensagem de erro com o
 botão "Tentar de novo".
 
-| Comando           | O que faz                                      |
-| ----------------- | ---------------------------------------------- |
-| `npm run dev`     | Servidor de desenvolvimento                    |
-| `npm run build`   | Checa os tipos (`tsc`) e gera a pasta `dist/`  |
-| `npm run preview` | Serve o build gerado, para conferir como fica  |
-| `npm run lint`    | Roda o ESLint                                  |
+| Comando              | O que faz                                          |
+| -------------------- | -------------------------------------------------- |
+| `npm run dev`        | Site público em desenvolvimento (:5173)            |
+| `npm run dev:painel` | Painel em desenvolvimento (:5174)                  |
+| `npm run build`      | Gera os dois: `dist/site` e `dist/painel`          |
+| `npm run build:site` / `build:painel` | Gera só um deles                  |
+| `npm run lint`       | Roda o ESLint                                      |
+
+No build do painel, defina `VITE_SITE_URL` com o endereço do site público (por
+exemplo `VITE_SITE_URL=https://ajuda.suaempresa.com.br npm run build:painel`),
+para os links "Ver no site" apontarem para lá.
 
 ## Estrutura
 
 ```
 src/
-├── App.tsx                  # Rotas
-├── main.tsx                 # Entrada: fonte, tema e estilos globais
+├── App.tsx                  # Rotas do site público
+├── main.tsx                 # Entrada do site: fonte, tema e estilos globais
+├── painel/
+│   ├── AppPainel.tsx        # Rotas do painel (outro build, outro endereço)
+│   └── main.tsx             # Entrada do painel (página painel.html)
+├── admin/                   # Sessão do painel, login em duas etapas, proteção das rotas
+├── lib/enderecos.ts         # Endereço do site público, para os links do painel
 ├── api/
 │   ├── client.ts            # Chamada à API, erros com texto amigável
 │   ├── helpCenter.ts        # Tipos da tela e conversão da resposta da API
@@ -66,7 +80,7 @@ src/
 │   ├── PageShell/           # Estrutura das páginas internas (voltar + título)
 │   ├── RoutineTopics/       # Tópicos de rotina recolhíveis (texto e imagem)
 │   └── SearchRoutines/      # Busca com sugestões de rotinas
-├── pages/                   # Home, Module (qualquer módulo), NotFound e Admin/
+├── pages/                   # Home, Module (qualquer módulo), NotFound e Admin/ (telas do painel)
 └── styles/
     ├── theme.css            # Todas as cores, raios e sombras (variáveis)
     └── global.css           # Reset, corpo, container e foco
@@ -74,28 +88,36 @@ src/
 
 ## Rotas
 
-| Rota                | Página             | Estado               |
-| ------------------- | ------------------ | -------------------- |
-| `/`                 | Home               | Pronta               |
-| `/:modulo`          | Página do módulo (`/estoque`, `/relatorios`, `/novidades`...) | Uma página só para todos, lida da API |
-| `/admin/login`      | Entrar no painel   | Pronta               |
-| `/admin/cadastro`   | Criar conta        | Exige o código de cadastro |
-| `/admin`            | Lista de passo a passo | Exige login      |
-| `/admin/topicos/novo` e `/admin/topicos/:id` | Editor, com histórico | Exige login |
-| `/admin/modulos`    | Módulos            | Exige login          |
-| `/admin/metricas`   | Métricas           | Exige login          |
-| `/admin/imagens`    | Imagens sem uso    | Exige login          |
-| qualquer outra      | Página não encontrada | Pronta            |
+**Site público** (ex.: `ajuda.suaempresa.com.br`)
+
+| Rota       | Página |
+| ---------- | ------ |
+| `/`        | Home |
+| `/:modulo` | Página do módulo (`/estoque`, `/relatorios`, `/novidades`...), lida da API |
+| qualquer outra | Página não encontrada (inclusive `/admin`, que não existe aqui) |
+
+**Painel** (ex.: `painel.suaempresa.com.br`)
+
+| Rota | Tela | Acesso |
+| --- | --- | --- |
+| `/login`, `/login/codigo` | Entrar (senha e, se ligada, código do aplicativo) | Aberta |
+| `/cadastro` | Criar conta | Exige o código de cadastro |
+| `/` | Lista de passo a passo | Exige login |
+| `/topicos/novo`, `/topicos/:id` | Editor, com histórico | Exige login |
+| `/modulos`, `/metricas`, `/imagens` | Módulos, métricas, imagens sem uso | Exige login |
+| `/acessos` | Registro de acessos ao painel | Exige login |
+| `/seguranca` | Minha conta: senha e verificação em duas etapas | Exige login |
 
 ## Painel de edição
 
-Em `/admin` a equipe escreve, edita, publica e exclui os passo a passo, sem
-mexer em código. Não há perfis nem aprovação: quem tem conta publica.
+No painel a equipe escreve, edita, publica e exclui os passo a passo, sem
+mexer em código. Não há perfis nem aprovação: quem tem conta publica. A
+segurança do painel está em [`docs/seguranca.md`](docs/seguranca.md).
 
 1. Defina o `CODIGO_CADASTRO` no `.env` da API (veja `api/README.md`) e rode
-   `npm run db:migrate` na pasta `api` para criar a tabela de sessões.
-2. Abra `http://localhost:5173/admin/cadastro`, informe nome, e-mail, senha e
-   o código. A conta já entra logada.
+   `npm run db:migrate` na pasta `api`.
+2. Abra `http://localhost:5174/cadastro`, informe nome, e-mail, senha e o
+   código. A conta já entra logada.
 3. Em "Novo passo a passo", escolha o módulo, escreva o título e os blocos de
    texto e salve como rascunho. **Publicar** coloca no site; **Tirar do site**
    volta para rascunho. Depois de publicado, salvar uma edição já vale no site.
@@ -105,7 +127,7 @@ Ela é reduzida para 1600 px de largura e convertida para WebP, e você precisa
 descrever o que ela mostra (texto para quem usa leitor de tela). Telas em
 `src/pages/Admin/`, sessão em `src/admin/`.
 
-O painel tem quatro seções:
+O painel tem seis seções:
 
 - **Passo a passo:** lista e editor. No fim do editor fica o **Histórico**:
   quem criou, editou, publicou ou tirou do site, e quando. As versões salvas a
@@ -117,6 +139,10 @@ O painel tem quatro seções:
 - **Métricas:** buscas sem resultado, "Esta resposta ajudou?" e os mais
   abertos, nos últimos 7, 30 ou 90 dias.
 - **Imagens:** as que nenhum passo a passo usa, para apagar e liberar espaço.
+- **Acessos:** quem entrou, quando, de qual IP e navegador, e as tentativas
+  que falharam (senha ou código errado, conta bloqueada).
+- **Minha conta:** trocar a senha e ligar ou desligar a verificação em duas
+  etapas (aplicativo autenticador no celular).
 
 ## Onde o conteúdo é cadastrado
 

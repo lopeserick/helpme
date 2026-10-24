@@ -12,7 +12,7 @@ import {
 import { useApi } from '../../../api/useApi';
 import EditorForm from './EditorForm';
 
-const voltar = { to: '/admin', label: 'Voltar para a lista' };
+const voltar = { to: '/', label: 'Voltar para a lista' };
 
 /** Abre um passo a passo que já existe. */
 function Editar({ id }: { id: string }) {

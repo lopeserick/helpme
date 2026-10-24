@@ -1,9 +1,13 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './auth-context';
 
-/** Só deixa passar quem está logado; os demais vão para a tela de login. */
+/**
+ * Só deixa passar quem está logado; os demais vão para a tela de login.
+ * Se a central exige verificação em duas etapas e a conta ainda não ativou,
+ * a única tela liberada é Minha conta, onde se ativa.
+ */
 export default function RequireAuth() {
-  const { usuario, carregando } = useAuth();
+  const { usuario, carregando, exige2fa } = useAuth();
   const location = useLocation();
 
   if (carregando) {
@@ -15,7 +19,11 @@ export default function RequireAuth() {
   }
 
   if (!usuario) {
-    return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  }
+
+  if (exige2fa && !usuario.doisFatores && location.pathname !== '/seguranca') {
+    return <Navigate to="/seguranca" replace />;
   }
 
   return <Outlet />;

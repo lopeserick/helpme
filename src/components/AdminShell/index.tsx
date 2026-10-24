@@ -2,21 +2,27 @@ import type { MouseEvent, ReactNode } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ArrowLeft, LogOut } from 'lucide-react';
 import PageHeader from '../PageHeader';
+import { siteUrl } from '../../lib/enderecos';
 import { useAuth } from '../../admin/auth-context';
 import styles from './styles.module.css';
 
 const SECOES = [
-  { to: '/admin', rotulo: 'Passo a passo' },
-  { to: '/admin/modulos', rotulo: 'Módulos' },
-  { to: '/admin/metricas', rotulo: 'Métricas' },
-  { to: '/admin/imagens', rotulo: 'Imagens' },
+  { to: '/', rotulo: 'Passo a passo' },
+  { to: '/modulos', rotulo: 'Módulos' },
+  { to: '/metricas', rotulo: 'Métricas' },
+  { to: '/imagens', rotulo: 'Imagens' },
+  { to: '/acessos', rotulo: 'Acessos' },
+  { to: '/seguranca', rotulo: 'Minha conta' },
 ];
 
 type Props = {
   title: string;
   description?: string;
-  /** Para onde o link "voltar" leva. Por padrão, a central pública. */
-  back?: { to: string; label: string };
+  /**
+   * Para onde o link "voltar" leva: uma tela do painel (`to`) ou um endereço
+   * fora dele (`href`). Por padrão, a central pública.
+   */
+  back?: { to: string; label: string } | { href: string; label: string };
   /** Chamado ao clicar em "voltar"; use `preventDefault` para impedir a saída. */
   onBack?: (event: MouseEvent<HTMLAnchorElement>) => void;
   children: ReactNode;
@@ -31,7 +37,7 @@ type Props = {
 export default function AdminShell({
   title,
   description,
-  back = { to: '/', label: 'Ver a central de ajuda' },
+  back = { href: siteUrl('/'), label: 'Ver a central de ajuda' },
   onBack,
   children,
   width = 'wide',
@@ -41,17 +47,24 @@ export default function AdminShell({
 
   async function handleSair() {
     await sair();
-    navigate('/admin/login', { replace: true });
+    navigate('/login', { replace: true });
   }
 
   return (
     <>
       <PageHeader size="compact">
         <div className={styles.top}>
-          <Link to={back.to} className={styles.back} onClick={onBack}>
-            <ArrowLeft aria-hidden="true" />
-            {back.label}
-          </Link>
+          {'to' in back ? (
+            <Link to={back.to} className={styles.back} onClick={onBack}>
+              <ArrowLeft aria-hidden="true" />
+              {back.label}
+            </Link>
+          ) : (
+            <a href={back.href} className={styles.back}>
+              <ArrowLeft aria-hidden="true" />
+              {back.label}
+            </a>
+          )}
 
           {usuario && (
             <div className={styles.user}>
@@ -70,7 +83,7 @@ export default function AdminShell({
               <NavLink
                 key={s.to}
                 to={s.to}
-                end={s.to === '/admin'}
+                end={s.to === '/'}
                 className={({ isActive }) => `${styles.navLink} ${isActive ? styles.ativo : ''}`}
               >
                 {s.rotulo}

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import AdminShell from '../../../components/AdminShell';
 import { useAuth } from '../../../admin/auth-context';
+import { siteUrl } from '../../../lib/enderecos';
 import styles from '../forms.module.css';
 
 export default function Cadastro() {
@@ -15,7 +16,7 @@ export default function Cadastro() {
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
-  if (!carregando && usuario) return <Navigate to="/admin" replace />;
+  if (!carregando && usuario) return <Navigate to="/" replace />;
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -24,7 +25,7 @@ export default function Cadastro() {
 
     try {
       await cadastrar({ nome, email, senha, codigo });
-      navigate('/admin', { replace: true });
+      navigate('/', { replace: true });
     } catch (e) {
       setErro(e instanceof Error ? e.message : 'Não foi possível criar a conta.');
       setEnviando(false);
@@ -35,7 +36,7 @@ export default function Cadastro() {
     <AdminShell
       title="Criar conta"
       description="Para quem vai escrever e publicar na central de ajuda."
-      back={{ to: '/', label: 'Voltar para a central de ajuda' }}
+      back={{ href: siteUrl('/'), label: 'Voltar para a central de ajuda' }}
       width="narrow"
     >
       <div className={styles.card}>
@@ -110,7 +111,7 @@ export default function Cadastro() {
       </div>
 
       <p className={styles.alt}>
-        Já tem conta? <Link to="/admin/login">Entrar</Link>
+        Já tem conta? <Link to="/login">Entrar</Link>
       </p>
     </AdminShell>
   );

@@ -54,6 +54,16 @@ export const usuario = pgTable('usuario', {
   /** Hash scrypt da senha (formato em lib/senha.ts). A senha em si nunca é guardada. */
   senhaHash: text('senha_hash').notNull(),
   ativo: boolean('ativo').notNull().default(true),
+  /** Senhas erradas seguidas (zera no login certo ou ao bloquear). */
+  falhasLogin: integer('falhas_login').notNull().default(0),
+  /** Até quando a conta fica bloqueada depois de muitas senhas erradas. */
+  bloqueadoAte: timestamp('bloqueado_ate', { withTimezone: true }),
+  /** Segredo da verificação em duas etapas, cifrado (lib/cifra.ts). Nulo = desligada. */
+  totpSegredo: text('totp_segredo'),
+  /** Segredo gerado e ainda não confirmado com um código (durante a ativação). */
+  totpPendente: text('totp_pendente'),
+  /** Último intervalo de 30 s aceito: impede usar o mesmo código duas vezes. */
+  totpUltimoPasso: integer('totp_ultimo_passo').notNull().default(0),
   criadoEm: timestamp('criado_em', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -146,8 +156,34 @@ export const sessao = pgTable(
       .references(() => usuario.id, { onDelete: 'cascade' }),
     criadaEm: timestamp('criada_em', { withTimezone: true }).notNull().defaultNow(),
     expiraEm: timestamp('expira_em', { withTimezone: true }).notNull(),
+    /** Última requisição: a sessão cai depois de SESSAO_INATIVIDADE_MIN parada. */
+    ultimoUso: timestamp('ultimo_uso', { withTimezone: true }).notNull().defaultNow(),
+    /**
+     * 'completa' = logado. 'codigo' = senha certa, falta o código da
+     * verificação em duas etapas (vale por poucos minutos e não abre o painel).
+     */
+    etapa: text('etapa').notNull().default('completa'),
   },
   (t) => [index('sessao_expira').on(t.expiraEm)],
+);
+
+/**
+ * Registro de acessos ao painel: logins, senhas erradas, bloqueios e mudanças
+ * de segurança. Guarda IP e navegador para investigar tentativas de invasão.
+ */
+export const acessoPainel = pgTable(
+  'acesso_painel',
+  {
+    id: bigserial('id', { mode: 'number' }).primaryKey(),
+    usuarioId: integer('usuario_id').references(() => usuario.id, { onDelete: 'set null' }),
+    /** O e-mail digitado, mesmo quando não existe conta com ele. */
+    email: text('email'),
+    evento: text('evento').notNull(),
+    ip: text('ip'),
+    navegador: text('navegador'),
+    em: timestamp('em', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('acesso_painel_em').on(t.em)],
 );
 
 /* ------------------------------------------------------------------ */

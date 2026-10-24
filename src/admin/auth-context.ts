@@ -3,9 +3,13 @@ import type { Usuario } from '../api/admin';
 
 export interface AuthContextValue {
   usuario: Usuario | null;
-  /** Verdadeiro enquanto o site confere se já existe uma sessão aberta. */
+  /** Verdadeiro enquanto o painel confere se já existe uma sessão aberta. */
   carregando: boolean;
-  entrar: (email: string, senha: string) => Promise<void>;
+  /** A central exige verificação em duas etapas de toda conta. */
+  exige2fa: boolean;
+  /** 'ok' = entrou; 'codigo' = falta o código do aplicativo (tela /login/codigo). */
+  entrar: (email: string, senha: string) => Promise<'ok' | 'codigo'>;
+  enviarCodigo: (codigo: string) => Promise<void>;
   cadastrar: (dados: {
     nome: string;
     email: string;
@@ -13,6 +17,8 @@ export interface AuthContextValue {
     codigo: string;
   }) => Promise<void>;
   sair: () => Promise<void>;
+  /** Marca, depois de ativar ou desligar a 2FA em Minha conta. */
+  atualizarDoisFatores: (ligada: boolean) => void;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
