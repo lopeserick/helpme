@@ -11,6 +11,7 @@ const SECOES = [
   { to: '/modulos', rotulo: 'Módulos' },
   { to: '/metricas', rotulo: 'Métricas' },
   { to: '/imagens', rotulo: 'Imagens' },
+  { to: '/sugestoes', rotulo: 'Sugestões' },
   { to: '/acessos', rotulo: 'Acessos' },
   { to: '/seguranca', rotulo: 'Minha conta' },
 ];

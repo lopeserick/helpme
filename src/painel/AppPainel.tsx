@@ -11,6 +11,7 @@ import AdminMetricas from '../pages/Admin/Metricas';
 import AdminImagens from '../pages/Admin/Imagens';
 import AdminAcessos from '../pages/Admin/Acessos';
 import AdminSeguranca from '../pages/Admin/Seguranca';
+import AdminSugestoes from '../pages/Admin/Sugestoes';
 import NotFound from '../pages/NotFound';
 
 /**
@@ -32,6 +33,7 @@ export default function AppPainel() {
             <Route path="/modulos" element={<AdminModulos />} />
             <Route path="/metricas" element={<AdminMetricas />} />
             <Route path="/imagens" element={<AdminImagens />} />
+            <Route path="/sugestoes" element={<AdminSugestoes />} />
             <Route path="/acessos" element={<AdminAcessos />} />
             <Route path="/seguranca" element={<AdminSeguranca />} />
           </Route>

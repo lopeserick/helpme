@@ -6,8 +6,11 @@ atacante não alcançar as rotas do painel pelo site público e, chegando ao
 painel, não conseguir entrar nem agir em nome de quem entrou.
 
 O acesso ao painel continua aberto de fora da empresa, de propósito: a equipe
-precisa usá-lo de qualquer lugar. Por isso a verificação em duas etapas é a
-proteção principal.
+precisa usá-lo de qualquer lugar.
+
+**Decisão atual:** login só com e-mail e senha. A verificação em duas etapas
+está pronta mas é **opcional**: sem `CHAVE_2FA` no `.env`, ela nem aparece no
+painel. Para ligar no futuro, basta definir a chave.
 
 ## 1. Endereço próprio para o painel
 
@@ -103,8 +106,9 @@ PAINEL_ORIGENS=https://painel.suaempresa.com.br
 CORS_ORIGINS=https://ajuda.suaempresa.com.br,https://painel.suaempresa.com.br
 COOKIE_SECURE=true
 TRUST_PROXY=true
-CHAVE_2FA=<gerada uma vez, guardada em lugar seguro>
-EXIGIR_2FA=true
+# Só se for usar a verificação em duas etapas:
+# CHAVE_2FA=<gerada uma vez, guardada em lugar seguro>
+# EXIGIR_2FA=true
 # CODIGO_CADASTRO só enquanto estiver criando as contas
 ```
 

@@ -93,6 +93,7 @@ src/
 | Rota       | Página |
 | ---------- | ------ |
 | `/`        | Home |
+| `/sugestoes` | Formulário de sugestões, enviado por e-mail (veja [`docs/sugestoes.md`](docs/sugestoes.md)) |
 | `/:modulo` | Página do módulo (`/estoque`, `/relatorios`, `/novidades`...), lida da API |
 | qualquer outra | Página não encontrada (inclusive `/admin`, que não existe aqui) |
 
@@ -105,6 +106,7 @@ src/
 | `/` | Lista de passo a passo | Exige login |
 | `/topicos/novo`, `/topicos/:id` | Editor, com histórico | Exige login |
 | `/modulos`, `/metricas`, `/imagens` | Módulos, métricas, imagens sem uso | Exige login |
+| `/sugestoes` | Sugestões recebidas dos clientes | Exige login |
 | `/acessos` | Registro de acessos ao painel | Exige login |
 | `/seguranca` | Minha conta: senha e verificação em duas etapas | Exige login |
 
@@ -127,7 +129,7 @@ Ela é reduzida para 1600 px de largura e convertida para WebP, e você precisa
 descrever o que ela mostra (texto para quem usa leitor de tela). Telas em
 `src/pages/Admin/`, sessão em `src/admin/`.
 
-O painel tem seis seções:
+O painel tem sete seções:
 
 - **Passo a passo:** lista e editor. No fim do editor fica o **Histórico**:
   quem criou, editou, publicou ou tirou do site, e quando. As versões salvas a
@@ -139,10 +141,12 @@ O painel tem seis seções:
 - **Métricas:** buscas sem resultado, "Esta resposta ajudou?" e os mais
   abertos, nos últimos 7, 30 ou 90 dias.
 - **Imagens:** as que nenhum passo a passo usa, para apagar e liberar espaço.
+- **Sugestões:** o que os clientes mandaram pela página de sugestões (também
+  chega por e-mail), com "marcar como lida".
 - **Acessos:** quem entrou, quando, de qual IP e navegador, e as tentativas
   que falharam (senha ou código errado, conta bloqueada).
-- **Minha conta:** trocar a senha e ligar ou desligar a verificação em duas
-  etapas (aplicativo autenticador no celular).
+- **Minha conta:** trocar a senha. A verificação em duas etapas é opcional e
+  só aparece se a `CHAVE_2FA` estiver no `.env` da API.
 
 ## Onde o conteúdo é cadastrado
 
@@ -179,6 +183,11 @@ sugestão, a pessoa vai para a página com o id do tópico no endereço
 (`/estoque#inventario`); `RoutineTopics` lê esse id, abre o tópico e o destaca
 por alguns segundos. Qualquer endereço nesse formato pode ser compartilhado e
 abre direto no tópico certo.
+
+## Integração com o Jira
+
+Preparada, mas **desligada**: tickets do Jira vão virar rascunhos em "O que há
+de novo". O que falta preencher está em [`docs/jira.md`](docs/jira.md).
 
 ## Métricas
 

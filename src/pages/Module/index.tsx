@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import AsyncContent from '../../components/AsyncContent';
+import ChamadaSugestao from '../../components/ChamadaSugestao';
 import PageShell from '../../components/PageShell';
 import RoutineTopics from '../../components/RoutineTopics';
 import { parseModulePage, type ModuloResposta, type ModulePage } from '../../api/helpCenter';
@@ -35,6 +36,7 @@ export default function Module() {
       >
         {data && <RoutineTopics topics={data.topics} moduleSlug={data.slug} />}
       </AsyncContent>
+      {data && <ChamadaSugestao formato="linha" />}
     </PageShell>
   );
 }

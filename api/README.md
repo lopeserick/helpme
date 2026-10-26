@@ -92,6 +92,7 @@ rode `npm run teste:api` em outro terminal.
 | `npm start` | Sobe a API uma vez |
 | `npm run check` | Confere os tipos |
 | `npm run usuario -- <comando>` | Contas pelo terminal: `listar`, `senha`, `desbloquear`, `desativar-2fa`, `desativar`, `ativar` |
+| `npm run jira:sincronizar` | Busca os tickets do Jira uma vez (integração ainda desligada, veja `docs/jira.md`) |
 | `npm run teste:api` | Testa a API no ar: saúde, rotas, erros, CORS e imagens (`API_URL` muda o endereço) |
 | `npm run db:generate` | Gera a migração depois de mudar `src/db/schema.ts` |
 | `npm run db:migrate` | Aplica as migrações pendentes (rode depois de cada `git pull`) |
@@ -170,6 +171,18 @@ e a resposta diz quantos (`imagensPerdidas`).
 reservados (`src/lib/modulos.ts`), porque já são caminhos do site ou do IIS. O
 ícone precisa ser um de `database`, `dollar`, `book`, `star` e `chart`. Não há
 exclusão de módulo, só ocultar da Home (`visivel`).
+
+### Sugestões (públicas)
+
+| Rota | Faz |
+| --- | --- |
+| `GET /api/sugestoes/disponivel` | Se o envio está configurado (o site esconde o formulário se não estiver) |
+| `POST /api/sugestoes` | Formulário multipart: `nome`, `email`, `empresa`, `titulo`, `texto` e até 3 `imagens` |
+
+Guarda no banco (tabela `sugestao`) e envia por e-mail via SMTP. Limite de 5
+por IP a cada 15 minutos. No painel: `GET /api/admin/sugestoes` e
+`POST /api/admin/sugestoes/:id/lida`. Configuração e formato do e-mail em
+[`../docs/sugestoes.md`](../docs/sugestoes.md).
 
 ### Métricas (públicas)
 
@@ -257,12 +270,16 @@ api/
     │   ├── publico.ts        # Leitura aberta ao público
     │   ├── auth.ts           # Cadastro, login, logout
     │   ├── metricas.ts       # Registro público de acessos, votos e buscas
+    │   ├── sugestoes.ts      # Formulário de sugestões e envio do e-mail
+    │   ├── admin-sugestoes.ts # Sugestões no painel
     │   ├── admin.ts          # Reúne as rotas do painel e exige login
     │   ├── admin-conta.ts    # Minha conta, 2FA e registro de acessos
     │   ├── admin-topicos.ts  # Tópicos, histórico e restauração
     │   ├── admin-modulos.ts  # Criar, editar e ordenar módulos
     │   ├── admin-metricas.ts # Resumo das métricas
     │   └── admin-imagens.ts  # Envio e limpeza de imagens
+    ├── integracoes/
+    │   └── jira.ts       # Jira → rascunhos de novidades (desligada)
     └── lib/
         ├── texto.ts      # Normalização usada pela busca
         ├── senha.ts      # Hash de senha (scrypt)
@@ -271,6 +288,7 @@ api/
         ├── cifra.ts      # Cifra os segredos da 2FA (AES-256-GCM)
         ├── origem.ts     # Checagem de origem nas ações de escrita (CSRF)
         ├── registro.ts   # Registro de acessos ao painel
+        ├── email.ts      # Envio por SMTP (nodemailer)
         ├── uploads.ts    # Validar, reduzir e gravar imagens
         ├── modulos.ts    # Ícones aceitos e slugs reservados
         └── metricas.ts   # Data do dia para as contagens

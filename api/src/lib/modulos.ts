@@ -11,6 +11,8 @@ export const SLUGS_RESERVADOS = new Set([
   'uploads',
   'assets',
   'exemplos',
+  // Páginas fixas do site.
+  'sugestoes',
   'index.html',
   'favicon.ico',
 ]);

@@ -2,6 +2,7 @@ import Header from '../../components/Header';
 import AsyncContent from '../../components/AsyncContent';
 import CategoryCard from '../../components/CategoryCard';
 import CategoryIcon from '../../components/CategoryIcon';
+import ChamadaSugestao from '../../components/ChamadaSugestao';
 import Index from '../../components/Index';
 import NewsAlert from '../../components/NewsAlert';
 import {
@@ -59,7 +60,10 @@ export default function Home() {
           </AsyncContent>
         </section>
 
-        {populares.data && populares.data.length > 0 && <Index items={populares.data} />}
+        <div>
+          {populares.data && populares.data.length > 0 && <Index items={populares.data} />}
+          <ChamadaSugestao />
+        </div>
       </main>
     </>
   );

@@ -288,3 +288,22 @@ export function formatarBytes(bytes: number) {
   if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
+
+export interface SugestaoRecebida {
+  id: number;
+  nome: string;
+  email: string;
+  empresa: string;
+  titulo: string;
+  texto: string;
+  imagens: number;
+  enviadaEm: string | null;
+  erroEnvio: string | null;
+  lida: boolean;
+  criadaEm: string;
+}
+
+export const parseSugestoes = (raw: { sugestoes: SugestaoRecebida[] }) => raw.sugestoes;
+
+export const marcarSugestao = (id: number, lida: boolean) =>
+  sendJson('POST', `/api/admin/sugestoes/${id}/lida`, { lida });

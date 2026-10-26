@@ -1,0 +1,83 @@
+.formulario,
+.sucesso {
+  max-width: 720px;
+}
+
+.sucesso {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subtitulo {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.duasColunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.texto {
+  min-height: 180px;
+}
+
+.imagens {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+  list-style: none;
+}
+
+.imagens li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  font-size: 0.9375rem;
+  word-break: break-all;
+}
+
+.remover {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.remover svg {
+  width: 16px;
+  height: 16px;
+}
+
+.escondido {
+  display: none;
+}
+
+/* Fora da tela: robôs preenchem, pessoas nem veem. */
+.armadilha {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .duasColunas {
+    grid-template-columns: 1fr;
+  }
+}

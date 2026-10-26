@@ -115,6 +115,12 @@ export const topico = pgTable(
     publicadoEm: timestamp('publicado_em', { withTimezone: true }),
     /** Nulo significa ativo. Exclusão é reversível. */
     excluidoEm: timestamp('excluido_em', { withTimezone: true }),
+    /**
+     * Chave do ticket do Jira que deu origem ao tópico (ex.: ACS-482), quando
+     * ele veio da integração. Evita criar o mesmo aviso duas vezes. Ainda sem
+     * uso: a integração está desligada (src/integracoes/jira.ts).
+     */
+    jiraChave: text('jira_chave').unique(),
     criadoPor: integer('criado_por').references(() => usuario.id),
     atualizadoPor: integer('atualizado_por').references(() => usuario.id),
     criadoEm: timestamp('criado_em', { withTimezone: true }).notNull().defaultNow(),
@@ -230,4 +236,34 @@ export const buscaVaziaDia = pgTable(
     total: integer('total').notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.termo, t.dia] })],
+);
+
+/* ------------------------------------------------------------------ */
+/* Sugestões                                                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Sugestões enviadas pelos clientes na página /sugestoes. Ficam guardadas
+ * mesmo que o e-mail falhe, e aparecem no painel. As imagens só vão no
+ * e-mail: aqui fica apenas quantas eram.
+ */
+export const sugestao = pgTable(
+  'sugestao',
+  {
+    id: serial('id').primaryKey(),
+    nome: text('nome').notNull(),
+    email: text('email').notNull(),
+    empresa: text('empresa').notNull(),
+    titulo: text('titulo').notNull(),
+    texto: text('texto').notNull(),
+    imagens: integer('imagens').notNull().default(0),
+    /** Quando o e-mail saiu; nulo se ainda não saiu ou falhou. */
+    enviadaEm: timestamp('enviada_em', { withTimezone: true }),
+    /** Motivo da falha no envio, para o painel mostrar. */
+    erroEnvio: text('erro_envio'),
+    /** Marcada como lida no painel. */
+    lida: boolean('lida').notNull().default(false),
+    criadaEm: timestamp('criada_em', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('sugestao_criada').on(t.criadaEm)],
 );

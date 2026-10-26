@@ -58,9 +58,40 @@ const schema = z.object({
   COOKIE_SECURE: z.stringbool().default(false),
   /** Ligue (true) atrás do IIS, para o limite de tentativas enxergar o IP real. */
   TRUST_PROXY: z.stringbool().default(false),
+
+  /* ---------------------------- Sugestões ---------------------------- */
+  /** Para onde vão as sugestões enviadas pelo site. Sem isso, o formulário fica desligado. */
+  SUGESTOES_DESTINO: opcional(z.email('SUGESTOES_DESTINO precisa ser um e-mail')),
+  /** Sugestões aceitas por IP a cada 15 minutos (contra spam). */
+  LIMITE_SUGESTOES: z.coerce.number().int().positive().default(5),
+  /** Servidor de e-mail que envia. Gmail: smtp.gmail.com, porta 465, seguro. */
+  SMTP_HOST: z.string().trim().default('smtp.gmail.com'),
+  SMTP_PORTA: z.coerce.number().int().positive().default(465),
+  /** true para a porta 465 (SSL direto); false para 587 (STARTTLS). */
+  SMTP_SEGURO: z.stringbool().default(true),
+  /** A conta que envia. No Gmail, a senha é uma "senha de app", não a senha normal. */
+  SMTP_USUARIO: opcional(z.string().trim()),
+  SMTP_SENHA: opcional(z.string()),
+  /** Nome que aparece como remetente. */
+  SMTP_NOME_REMETENTE: z.string().trim().default('Sugestões · Help Me'),
+
+  /* --------------------- Integração com o Jira ---------------------- */
+  /* Ainda desligada: veja src/integracoes/jira.ts e docs/jira.md.       */
+  JIRA_URL: opcional(z.url('JIRA_URL precisa ser um endereço, ex.: https://empresa.atlassian.net')),
+  JIRA_EMAIL: opcional(z.email('JIRA_EMAIL precisa ser um e-mail')),
+  JIRA_TOKEN: opcional(z.string().trim()),
+  JIRA_JQL: opcional(z.string().trim()),
+  JIRA_CAMPO_TEXTO: opcional(z.string().trim()),
+  JIRA_ROTULOS: opcional(z.string().trim()),
+  JIRA_INTERVALO_MIN: z.coerce.number().positive().default(30),
 });
 
-const resultado = schema.safeParse(process.env);
+const resultado = schema
+  .refine((v) => !v.EXIGIR_2FA || v.CHAVE_2FA, {
+    message: 'EXIGIR_2FA=true precisa da CHAVE_2FA definida (senão ninguém consegue ativar)',
+    path: ['EXIGIR_2FA'],
+  })
+  .safeParse(process.env);
 
 if (!resultado.success) {
   const problemas = resultado.error.issues

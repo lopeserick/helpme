@@ -1,0 +1,81 @@
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.resumo {
+  color: var(--ink-muted);
+}
+
+.filtro {
+  min-width: 200px;
+}
+
+.vazio {
+  color: var(--ink-muted);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 860px;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-left: 6px solid var(--mark);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.lida {
+  border-left-color: var(--line);
+  background: var(--surface-muted);
+}
+
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.titulo {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.quem {
+  color: var(--ink-muted);
+  font-size: 0.9375rem;
+}
+
+.quem a {
+  color: var(--brand-800);
+}
+
+.texto {
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.meta {
+  color: var(--ink-muted);
+  font-size: 0.875rem;
+}
+
+.falha {
+  color: var(--ink);
+  font-weight: 700;
+}

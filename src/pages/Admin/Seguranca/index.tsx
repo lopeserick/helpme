@@ -46,12 +46,16 @@ export default function Seguranca() {
       <AsyncContent loading={loading} error={error} onRetry={retry} loadingLabel="Carregando…">
         {data && (
           <div className={styles.secoes}>
-            <DoisFatores
-              ligada={doisFatores}
-              disponivel={data.doisFatoresDisponivel}
-              obrigatoria={data.exige2fa}
-              onMudou={aoMudar2fa}
-            />
+            {/* Sem CHAVE_2FA no servidor, a verificação em duas etapas não é usada
+                nesta central e a seção nem aparece (a não ser para quem já a ligou). */}
+            {(data.doisFatoresDisponivel || doisFatores) && (
+              <DoisFatores
+                ligada={doisFatores}
+                disponivel={data.doisFatoresDisponivel}
+                obrigatoria={data.exige2fa}
+                onMudou={aoMudar2fa}
+              />
+            )}
             {!obrigatoriaPendente && <TrocarSenha />}
           </div>
         )}
