@@ -265,49 +265,61 @@ uma vez.
 
 ## Onde paramos
 
-Atualizado em 20/10/2026.
+Atualizado em 26/10/2026. Ponto de partida para quem retomar o projeto.
 
 **Contexto.** O ERP Acesse é feito em Delphi, então a equipe não tem prática
 com desenvolvimento web — por isso a escolha de Node não briga com a casa,
 mas a manutenção do projeto fica concentrada em quem o construir. O destino é
-a VM Windows Server da empresa, com PostgreSQL.
+a VM Windows Server da empresa, com PostgreSQL. Sem perfis e sem aprovação:
+quem tem conta no painel publica.
 
-**Pronto e no ar:**
+### Branches
 
-| Branch | O que tem |
-| --- | --- |
-| `chore/estabilizacao-fase-1` | Front-end: correções, visual, tópicos recolhíveis, alerta de novidades e busca |
-| `feat/api-fase-1` | Esta branch: API, site consumindo a API e o painel completo (fases 1 a 4) |
+| Branch | O que tem | Situação |
+| --- | --- | --- |
+| `main` | Fases 1 a 4: API, site lendo da API e painel (passo a passo, módulos, métricas, imagens, histórico) | Mesclada pelo PR #1 |
+| `security-level` | `main` + painel em endereço próprio, bloqueio por conta, inatividade, origem, cabeçalhos, registro de acessos, 2FA, `npm run usuario` | Enviada, sem PR |
+| `security-news` | `security-level` + **sugestões por e-mail**, 2FA opcional (oculta sem `CHAVE_2FA`) e **base do Jira desligada** | **Branch atual de trabalho.** Testada no Windows pelo Erick; sem PR |
+| `feat/api-fase-1` | Mesmo conteúdo já mesclado na `main` | Pode ser apagada |
+| `chore/estabilizacao-fase-1`, `docs/arquitetura-api` | Versão sem API e documento antigo | Erick ia apagar pelo GitHub |
 
-**Fases 1 a 4 feitas, falta validar a 4 no seu ambiente.** O site lê tudo da
-API e o painel tem quatro seções:
+Fora deste repositório: `lopeserick/helpme-central-de-ajuda` (público), versão
+só visual com servidor de demonstração no navegador, para portfólio/LinkedIn,
+com "ERP Exemplo" no lugar de Acesse.
 
-- **Passo a passo:** lista e editor (texto e imagem, rascunho, publicar, tirar
-  do site, excluir) com **histórico** e **restaurar versão**.
-- **Módulos:** criar, editar, ocultar da Home e reordenar. O site tem uma página
-  genérica (`/:slug`) no lugar das seis fixas, então módulo novo já ganha
-  página. Subtítulo da página é opcional (vazio usa a descrição). Sem exclusão.
-- **Métricas:** buscas sem resultado, "Esta resposta ajudou?" e mais acessados,
-  como contagens por dia, sem IP. "Rotinas mais acessadas" na Home agora vem
-  daqui.
-- **Imagens:** lista e apaga as que nenhum tópico usa.
+### Como rodar (branch `security-news`)
 
-Sem perfis e sem aprovação, como combinado. Tudo conferido na nuvem com um
-PostgreSQL de teste. No Windows: `git pull`, `npm ci` na raiz e na API,
-`npm run db:migrate` na API, subir API e site.
+Três terminais: `npm run dev` em `api/` (API, :3000), `npm run dev` na raiz
+(site público, :5173) e `npm run dev:painel` na raiz (painel, :5174). Depois de
+trocar de branch: `npm ci` na raiz e em `api/`, e `npm run db:migrate` em
+`api/`. O `.env` da API segue o `api/.env.example` (o `.env` não vai para o
+Git); para as sugestões, `SMTP_SENHA` é uma senha de app do Gmail.
 
-**Atenção na publicação:** a pasta de imagens (`UPLOADS_DIR`) entra no backup
-junto com o banco, e o IIS precisa servi-la em `/uploads`.
+### Decisões tomadas
 
-**Branch `security-level`:** painel em endereço próprio (build separado, o
-site público não alcança `/api/admin` nem `/api/auth`), verificação em duas
-etapas, bloqueio por conta, sessão por inatividade, checagem de origem,
-cabeçalhos de segurança, registro de acessos e o comando `npm run usuario`.
-Tudo em [`seguranca.md`](./seguranca.md). A restrição por IP foi descartada:
-a equipe usa o painel de fora da empresa.
+- Painel em **endereço próprio** (ex.: `painel.suaempresa.com.br`); o site
+  público não alcança `/api/admin` nem `/api/auth`.
+- **Sem restrição por IP**: a equipe usa o painel de fora da empresa.
+- **Login só com e-mail e senha**: a 2FA existe, mas fica oculta sem
+  `CHAVE_2FA`.
+- Sessão: 12 h no máximo, cai com 30 min parada.
+- Sugestões: nome, e-mail, empresa, título e texto obrigatórios, até 3
+  imagens; e-mail para `sugestaobrasilsoftware@gmail.com`, assunto
+  `Título — Nome (Empresa)`, "Responder para" do cliente
+  ([`sugestoes.md`](./sugestoes.md)).
+- Jira: tickets viram **rascunhos** em "O que há de novo", nunca publicação
+  direta ([`jira.md`](./jira.md)).
 
-**Próximo passo: publicar na VM** (IIS, API como serviço, HTTPS, backup e
-`/admin` só pela rede interna).
+### Próximos passos
+
+1. **Ligar o Jira**: Erick vai trazer endereço do Jira, conta de leitura e
+   token, a JQL, o campo de texto para o cliente e o mapa de labels. Depois:
+   `npm run jira:sincronizar`, conferir os rascunhos e descomentar a ativação
+   em `api/src/server.ts`. Passo a passo em [`jira.md`](./jira.md).
+2. Abrir o PR da `security-news` para a `main`.
+3. Publicar na VM: DNS dos dois endereços, HTTPS, API como serviço (NSSM),
+   dois sites no IIS com os modelos de [`iis/`](./iis), `.env` de produção
+   ([`seguranca.md`](./seguranca.md)) e backup do banco e da pasta de imagens.
 
 **Ambiente de desenvolvimento conferido** (Windows): PostgreSQL 18 instalado
 pelo winget, banco `helpme` criado, API respondendo em `localhost:3000`. Em
@@ -317,8 +329,9 @@ precisa virar um usuário próprio da aplicação.
 ## Pontos em aberto
 
 - Confirmar que a VM é mesmo Windows Server 2019.
+- Nomes dos dois endereços (site e painel) e quem cuida do DNS e do HTTPS.
 - Definir quem guarda e distribui o código de cadastro.
-- Restringir o `/admin` por rede interna ou VPN no IIS, em vez de deixá-lo
-  exposto só com senha (decisão de infraestrutura, ainda não tomada).
 - Confirmar se o PostgreSQL existente pode receber um banco novo ou se será
   preciso subir uma instância.
+- Jira: se é Cloud (`*.atlassian.net`) ou Data Center, e o critério dos
+  tickets que viram novidade.
