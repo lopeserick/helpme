@@ -69,6 +69,7 @@ export default function Acessos() {
   return (
     <AdminShell
       title="Acessos ao painel"
+      back={{ to: '/conta', label: 'Voltar para Gerenciamento de conta' }}
       description="Logins, tentativas que falharam e mudanças de segurança, dos mais recentes para os mais antigos."
     >
       <AsyncContent

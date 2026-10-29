@@ -105,10 +105,11 @@ src/
 | `/cadastro` | Criar conta | Exige o código de cadastro |
 | `/` | Lista de passo a passo | Exige login |
 | `/topicos/novo`, `/topicos/:id` | Editor, com histórico | Exige login |
-| `/modulos`, `/metricas`, `/imagens` | Módulos, métricas, imagens sem uso | Exige login |
+| `/modulos`, `/metricas` | Módulos e métricas | Exige login |
 | `/sugestoes` | Sugestões recebidas dos clientes | Exige login |
-| `/acessos` | Registro de acessos ao painel | Exige login |
-| `/seguranca` | Minha conta: senha e verificação em duas etapas | Exige login |
+| `/conta` | Gerenciamento de conta: cartões com as funções abaixo | Exige login |
+| `/conta/senha`, `/conta/dois-fatores` | Trocar senha, verificação em duas etapas | Exige login |
+| `/conta/imagens`, `/conta/acessos` | Imagens sem uso, registro de acessos ao painel | Exige login |
 
 ## Painel de edição
 
@@ -129,7 +130,7 @@ Ela é reduzida para 1600 px de largura e convertida para WebP, e você precisa
 descrever o que ela mostra (texto para quem usa leitor de tela). Telas em
 `src/pages/Admin/`, sessão em `src/admin/`.
 
-O painel tem sete seções:
+O painel tem cinco seções:
 
 - **Passo a passo:** lista e editor. No fim do editor fica o **Histórico**:
   quem criou, editou, publicou ou tirou do site, e quando. As versões salvas a
@@ -140,13 +141,16 @@ O painel tem sete seções:
   Não há exclusão, só ocultar.
 - **Métricas:** buscas sem resultado, "Esta resposta ajudou?" e os mais
   abertos, nos últimos 7, 30 ou 90 dias.
-- **Imagens:** as que nenhum passo a passo usa, para apagar e liberar espaço.
 - **Sugestões:** o que os clientes mandaram pela página de sugestões (também
   chega por e-mail), com "marcar como lida".
-- **Acessos:** quem entrou, quando, de qual IP e navegador, e as tentativas
-  que falharam (senha ou código errado, conta bloqueada).
-- **Minha conta:** trocar a senha. A verificação em duas etapas é opcional e
-  só aparece se a `CHAVE_2FA` estiver no `.env` da API.
+- **Gerenciamento de conta:** uma grade de cartões, um para cada função:
+  - **Senha:** trocar a senha;
+  - **Verificação em duas etapas:** ativar ou desligar. Sem a `CHAVE_2FA` no
+    `.env` da API, o cartão mostra "Não configurada no servidor";
+  - **Imagens sem uso:** as que nenhum passo a passo usa, para apagar e
+    liberar espaço;
+  - **Acessos ao painel:** quem entrou, quando, de qual IP e navegador, e as
+    tentativas que falharam (senha ou código errado, conta bloqueada).
 
 ## Onde o conteúdo é cadastrado
 

@@ -36,7 +36,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Sessão vencida (ou parada demais) no meio do trabalho: volta ao login.
-  // 2FA exigida e ainda não ativada: RequireAuth leva para Minha conta.
+  // 2FA exigida e ainda não ativada: RequireAuth leva para a tela da verificação.
   useEffect(() => {
     const aoExpirar = () => setUsuario(null);
     const aoExigir2fa = () => setExige2fa(true);

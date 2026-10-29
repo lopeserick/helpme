@@ -32,7 +32,7 @@ painel. Para ligar no futuro, basta definir a chave.
 
 - **Senha** guardada só como hash scrypt. Mínimo de 8 caracteres.
 - **Verificação em duas etapas** (código de 6 dígitos de um aplicativo como
-  Google Authenticator), ligada em *Minha conta*:
+  Google Authenticator), ligada em *Gerenciamento de conta > Verificação em duas etapas*:
   - o segredo fica **cifrado** no banco (AES-256-GCM, chave `CHAVE_2FA` no
     `.env`): uma cópia do banco sozinha não gera códigos;
   - o mesmo código não serve duas vezes;
@@ -79,7 +79,7 @@ Na API (`@fastify/helmet`) e nas páginas (IIS):
 
 ## 5. Registro de acessos
 
-A tela **Acessos** mostra logins, saídas, senhas e códigos errados, contas
+A tela **Gerenciamento de conta > Acessos ao painel** mostra logins, saídas, senhas e códigos errados, contas
 bloqueadas e mudanças de segurança, com IP e navegador. Fica 180 dias. Muitas
 falhas seguidas para a mesma conta são sinal de ataque.
 

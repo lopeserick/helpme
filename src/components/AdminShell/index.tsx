@@ -10,10 +10,8 @@ const SECOES = [
   { to: '/', rotulo: 'Passo a passo' },
   { to: '/modulos', rotulo: 'Módulos' },
   { to: '/metricas', rotulo: 'Métricas' },
-  { to: '/imagens', rotulo: 'Imagens' },
   { to: '/sugestoes', rotulo: 'Sugestões' },
-  { to: '/acessos', rotulo: 'Acessos' },
-  { to: '/seguranca', rotulo: 'Minha conta' },
+  { to: '/conta', rotulo: 'Gerenciamento de conta' },
 ];
 
 type Props = {

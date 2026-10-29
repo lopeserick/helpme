@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AdminLayout from '../admin/AdminLayout';
 import RequireAuth from '../admin/RequireAuth';
 import AdminLogin from '../pages/Admin/Login';
@@ -10,7 +10,8 @@ import AdminModulos from '../pages/Admin/Modulos';
 import AdminMetricas from '../pages/Admin/Metricas';
 import AdminImagens from '../pages/Admin/Imagens';
 import AdminAcessos from '../pages/Admin/Acessos';
-import AdminSeguranca from '../pages/Admin/Seguranca';
+import AdminConta from '../pages/Admin/Conta';
+import { PaginaDoisFatores, PaginaSenha } from '../pages/Admin/Seguranca';
 import AdminSugestoes from '../pages/Admin/Sugestoes';
 import NotFound from '../pages/NotFound';
 
@@ -32,10 +33,16 @@ export default function AppPainel() {
             <Route path="/topicos/:id" element={<AdminEditor />} />
             <Route path="/modulos" element={<AdminModulos />} />
             <Route path="/metricas" element={<AdminMetricas />} />
-            <Route path="/imagens" element={<AdminImagens />} />
             <Route path="/sugestoes" element={<AdminSugestoes />} />
-            <Route path="/acessos" element={<AdminAcessos />} />
-            <Route path="/seguranca" element={<AdminSeguranca />} />
+            <Route path="/conta" element={<AdminConta />} />
+            <Route path="/conta/senha" element={<PaginaSenha />} />
+            <Route path="/conta/dois-fatores" element={<PaginaDoisFatores />} />
+            <Route path="/conta/imagens" element={<AdminImagens />} />
+            <Route path="/conta/acessos" element={<AdminAcessos />} />
+            {/* Endereços antigos, para favoritos salvos. */}
+            <Route path="/seguranca" element={<Navigate to="/conta" replace />} />
+            <Route path="/imagens" element={<Navigate to="/conta/imagens" replace />} />
+            <Route path="/acessos" element={<Navigate to="/conta/acessos" replace />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>

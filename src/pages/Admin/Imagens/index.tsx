@@ -76,6 +76,7 @@ export default function Imagens() {
   return (
     <AdminShell
       title="Imagens sem uso"
+      back={{ to: '/conta', label: 'Voltar para Gerenciamento de conta' }}
       description="Imagens enviadas que nenhum passo a passo usa. Apagar libera espaço no servidor."
     >
       <div aria-live="polite" className={styles.mensagens}>

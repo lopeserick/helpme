@@ -15,8 +15,10 @@ import { useAuth } from '../../../admin/auth-context';
 import forms from '../forms.module.css';
 import styles from './styles.module.css';
 
-/** Minha conta: trocar a senha e ligar ou desligar a verificação em duas etapas. */
-export default function Seguranca() {
+const VOLTAR = { to: '/conta', label: 'Voltar para Gerenciamento de conta' };
+
+/** Ligar ou desligar a verificação em duas etapas (Gerenciamento de conta). */
+export function PaginaDoisFatores() {
   const { data, error, loading, retry } = useApi<{ conta: Conta }, Conta>(
     '/api/admin/conta',
     parseConta,
@@ -33,9 +35,9 @@ export default function Seguranca() {
 
   return (
     <AdminShell
-      title="Minha conta"
+      title="Verificação em duas etapas"
       description={data ? `${data.nome} · ${data.email}` : undefined}
-      back={{ to: '/', label: 'Voltar para a lista' }}
+      back={VOLTAR}
     >
       {obrigatoriaPendente && (
         <p className={`${forms.notice} ${styles.obrigatoria}`} role="status">
@@ -46,20 +48,26 @@ export default function Seguranca() {
       <AsyncContent loading={loading} error={error} onRetry={retry} loadingLabel="Carregando…">
         {data && (
           <div className={styles.secoes}>
-            {/* Sem CHAVE_2FA no servidor, a verificação em duas etapas não é usada
-                nesta central e a seção nem aparece (a não ser para quem já a ligou). */}
-            {(data.doisFatoresDisponivel || doisFatores) && (
-              <DoisFatores
-                ligada={doisFatores}
-                disponivel={data.doisFatoresDisponivel}
-                obrigatoria={data.exige2fa}
-                onMudou={aoMudar2fa}
-              />
-            )}
-            {!obrigatoriaPendente && <TrocarSenha />}
+            <DoisFatores
+              ligada={doisFatores}
+              disponivel={data.doisFatoresDisponivel}
+              obrigatoria={data.exige2fa}
+              onMudou={aoMudar2fa}
+            />
           </div>
         )}
       </AsyncContent>
+    </AdminShell>
+  );
+}
+
+/** Trocar a senha (Gerenciamento de conta). */
+export function PaginaSenha() {
+  return (
+    <AdminShell title="Trocar senha" back={VOLTAR}>
+      <div className={styles.secoes}>
+        <TrocarSenha />
+      </div>
     </AdminShell>
   );
 }

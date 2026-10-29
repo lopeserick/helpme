@@ -17,7 +17,7 @@ export interface AuthContextValue {
     codigo: string;
   }) => Promise<void>;
   sair: () => Promise<void>;
-  /** Marca, depois de ativar ou desligar a 2FA em Minha conta. */
+  /** Marca, depois de ativar ou desligar a 2FA em Gerenciamento de conta. */
   atualizarDoisFatores: (ligada: boolean) => void;
 }
 
