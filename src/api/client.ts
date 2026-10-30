@@ -14,6 +14,9 @@ const credentials: RequestCredentials = base ? 'include' : 'same-origin';
 /** Disparado quando a API recusa uma chamada do painel por falta de login. */
 export const SESSAO_EXPIRADA = 'helpme:sessao-expirada';
 
+/** Disparado quando a API exige ativar a verificação em duas etapas primeiro. */
+export const EXIGE_2FA = 'helpme:exige-2fa';
+
 /** Erro com texto já pronto para mostrar a quem está lendo a central. */
 export class ApiError extends Error {
   status?: number;
@@ -40,22 +43,25 @@ function mensagemPara(status: number) {
 
 interface CorpoDeErro {
   erro?: string;
+  codigo?: string;
   problemas?: { mensagem?: string }[];
 }
 
 /** Prefere o texto que a API mandou (já em português) ao texto genérico. */
-async function mensagemDaResposta(resposta: Response) {
+async function lerErro(resposta: Response) {
   if (resposta.status < 500) {
     try {
       const corpo = (await resposta.json()) as CorpoDeErro;
       const detalhe = corpo.problemas?.[0]?.mensagem;
-      if (detalhe) return detalhe;
-      if (corpo.erro && corpo.erro !== 'requisição inválida') return corpo.erro;
+      if (detalhe) return { mensagem: detalhe, codigo: corpo.codigo };
+      if (corpo.erro && corpo.erro !== 'requisição inválida') {
+        return { mensagem: corpo.erro, codigo: corpo.codigo };
+      }
     } catch {
       // Corpo que não é JSON: cai no texto genérico.
     }
   }
-  return mensagemPara(resposta.status);
+  return { mensagem: mensagemPara(resposta.status), codigo: undefined };
 }
 
 async function chamar(path: string, init: RequestInit) {
@@ -80,7 +86,9 @@ async function chamar(path: string, init: RequestInit) {
     if (resposta.status === 401 && !path.startsWith('/api/auth/')) {
       window.dispatchEvent(new Event(SESSAO_EXPIRADA));
     }
-    throw new ApiError(await mensagemDaResposta(resposta), resposta.status);
+    const { mensagem, codigo } = await lerErro(resposta);
+    if (codigo === '2fa_obrigatoria') window.dispatchEvent(new Event(EXIGE_2FA));
+    throw new ApiError(mensagem, resposta.status);
   }
 
   return resposta;

@@ -91,6 +91,8 @@ rode `npm run teste:api` em outro terminal.
 | `npm run dev` | Sobe a API recarregando a cada alteração |
 | `npm start` | Sobe a API uma vez |
 | `npm run check` | Confere os tipos |
+| `npm run usuario -- <comando>` | Contas pelo terminal: `listar`, `senha`, `desbloquear`, `desativar-2fa`, `desativar`, `ativar` |
+| `npm run jira:sincronizar` | Busca os tickets do Jira uma vez (integração ainda desligada, veja `docs/jira.md`) |
 | `npm run teste:api` | Testa a API no ar: saúde, rotas, erros, CORS e imagens (`API_URL` muda o endereço) |
 | `npm run db:generate` | Gera a migração depois de mudar `src/db/schema.ts` |
 | `npm run db:migrate` | Aplica as migrações pendentes (rode depois de cada `git pull`) |
@@ -111,14 +113,21 @@ Todas públicas nesta fase. Nenhuma devolve rascunho nem tópico excluído.
 
 ### Login e cadastro
 
+Só respondem pelo endereço do painel (o IIS do site público devolve 404).
+Ações de escrita precisam vir de uma origem em `PAINEL_ORIGENS` (senão, 403).
+
 | Rota | Faz |
 | --- | --- |
 | `POST /api/auth/cadastro` | Cria a conta (nome, e-mail, senha e código de cadastro) e já abre a sessão |
-| `POST /api/auth/login` | E-mail e senha; abre a sessão num cookie |
+| `POST /api/auth/login` | E-mail e senha. Sem 2FA, abre a sessão; com 2FA, responde `{ etapa: 'codigo' }` |
+| `POST /api/auth/codigo` | O código de 6 dígitos, depois da senha; abre a sessão |
 | `POST /api/auth/logout` | Encerra a sessão |
-| `GET /api/auth/eu` | Quem está logado (401 se ninguém) |
+| `GET /api/auth/eu` | Quem está logado (401 se ninguém) e se a central exige 2FA |
 
-Cadastro e login aceitam 10 tentativas por minuto por IP; passou disso, **429**.
+Login, código e cadastro aceitam 10 tentativas por minuto por IP
+(`LIMITE_TENTATIVAS_IP`); passou disso, **429**. Cinco senhas ou códigos
+errados seguidos bloqueiam a conta por 15 minutos (**429** com a mensagem).
+Detalhes em [`../docs/seguranca.md`](../docs/seguranca.md).
 
 ### Painel (exige login)
 
@@ -127,6 +136,12 @@ de aprovação. Sem login, todas respondem **401**.
 
 | Rota | Faz |
 | --- | --- |
+| `GET /api/admin/conta` | Nome, e-mail e situação da 2FA |
+| `POST /api/admin/senha` | Troca a senha (`{ atual, nova }`) e desconecta os outros aparelhos |
+| `POST /api/admin/2fa/iniciar` | Com a senha: gera o segredo e devolve o QR code |
+| `POST /api/admin/2fa/confirmar` | Com o primeiro código: liga a 2FA |
+| `POST /api/admin/2fa/desativar` | Com senha e código: desliga (recusado se `EXIGIR_2FA`) |
+| `GET /api/admin/acessos` | Registro de acessos ao painel |
 | `GET /api/admin/modulos` | Todos os módulos, com a contagem de tópicos |
 | `POST /api/admin/modulos` | Cria um módulo; o slug sai do título |
 | `PUT /api/admin/modulos/:id` | Edita título, descrição, subtítulo, ícone e se aparece na Home (o slug não muda) |
@@ -156,6 +171,18 @@ e a resposta diz quantos (`imagensPerdidas`).
 reservados (`src/lib/modulos.ts`), porque já são caminhos do site ou do IIS. O
 ícone precisa ser um de `database`, `dollar`, `book`, `star` e `chart`. Não há
 exclusão de módulo, só ocultar da Home (`visivel`).
+
+### Sugestões (públicas)
+
+| Rota | Faz |
+| --- | --- |
+| `GET /api/sugestoes/disponivel` | Se o envio está configurado (o site esconde o formulário se não estiver) |
+| `POST /api/sugestoes` | Formulário multipart: `nome`, `email`, `empresa`, `titulo`, `texto` e até 3 `imagens` |
+
+Guarda no banco (tabela `sugestao`) e envia por e-mail via SMTP. Limite de 5
+por IP a cada 15 minutos. No painel: `GET /api/admin/sugestoes` e
+`POST /api/admin/sugestoes/:id/lida`. Configuração e formato do e-mail em
+[`../docs/sugestoes.md`](../docs/sugestoes.md).
 
 ### Métricas (públicas)
 
@@ -243,15 +270,25 @@ api/
     │   ├── publico.ts        # Leitura aberta ao público
     │   ├── auth.ts           # Cadastro, login, logout
     │   ├── metricas.ts       # Registro público de acessos, votos e buscas
+    │   ├── sugestoes.ts      # Formulário de sugestões e envio do e-mail
+    │   ├── admin-sugestoes.ts # Sugestões no painel
     │   ├── admin.ts          # Reúne as rotas do painel e exige login
+    │   ├── admin-conta.ts    # Minha conta, 2FA e registro de acessos
     │   ├── admin-topicos.ts  # Tópicos, histórico e restauração
     │   ├── admin-modulos.ts  # Criar, editar e ordenar módulos
     │   ├── admin-metricas.ts # Resumo das métricas
     │   └── admin-imagens.ts  # Envio e limpeza de imagens
+    ├── integracoes/
+    │   └── jira.ts       # Jira → rascunhos de novidades (desligada)
     └── lib/
         ├── texto.ts      # Normalização usada pela busca
         ├── senha.ts      # Hash de senha (scrypt)
-        ├── sessao.ts     # Sessão em cookie e exigência de login
+        ├── sessao.ts     # Sessão em cookie, inatividade e exigência de login
+        ├── totp.ts       # Códigos da verificação em duas etapas (RFC 6238)
+        ├── cifra.ts      # Cifra os segredos da 2FA (AES-256-GCM)
+        ├── origem.ts     # Checagem de origem nas ações de escrita (CSRF)
+        ├── registro.ts   # Registro de acessos ao painel
+        ├── email.ts      # Envio por SMTP (nodemailer)
         ├── uploads.ts    # Validar, reduzir e gravar imagens
         ├── modulos.ts    # Ícones aceitos e slugs reservados
         └── metricas.ts   # Data do dia para as contagens

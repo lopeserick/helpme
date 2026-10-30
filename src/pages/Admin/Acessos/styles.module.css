@@ -1,0 +1,22 @@
+.resumo {
+  margin-bottom: 16px;
+  color: var(--ink-muted);
+}
+
+.quando {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ip {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Falhas e desligamentos: marcados também pelo texto, não só pela cor */
+.alerta {
+  padding: 2px 8px;
+  border-left: 4px solid var(--mark);
+  background: var(--brand-50);
+  font-weight: 600;
+}

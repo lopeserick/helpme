@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowDown, ArrowUp, Eye, EyeOff, ImagePlus, Plus, Trash2 } from 'lucide-react';
 import AdminShell from '../../../components/AdminShell';
 import RoutineTopics from '../../../components/RoutineTopics';
@@ -20,6 +20,7 @@ import {
 import { mediaUrl } from '../../../api/client';
 import type { Topic, TopicBlock } from '../../../api/helpCenter';
 import Historico from './Historico';
+import { siteUrl } from '../../../lib/enderecos';
 import forms from '../forms.module.css';
 import styles from './styles.module.css';
 
@@ -240,7 +241,7 @@ export default function EditorForm({
 
   function irParaOEditor(id: number, mensagem: string) {
     // Troca /novo por /:id; o editor recarrega o tópico já gravado.
-    navigate(`/admin/topicos/${id}`, { replace: true, state: { aviso: mensagem } });
+    navigate(`/topicos/${id}`, { replace: true, state: { aviso: mensagem } });
   }
 
   const salvar = () =>
@@ -287,7 +288,7 @@ export default function EditorForm({
     return executar(
       async () => {
         await excluirTopico(topico.id);
-        navigate('/admin', { replace: true, state: { aviso: 'Passo a passo excluído.' } });
+        navigate('/', { replace: true, state: { aviso: 'Passo a passo excluído.' } });
       },
       { validarAntes: false },
     );
@@ -311,7 +312,7 @@ export default function EditorForm({
   return (
     <AdminShell
       title={topico ? 'Editar passo a passo' : 'Novo passo a passo'}
-      back={{ to: '/admin', label: 'Voltar para a lista' }}
+      back={{ to: '/', label: 'Voltar para a lista' }}
       onBack={aoVoltar}
     >
       <form
@@ -565,14 +566,14 @@ export default function EditorForm({
             </button>
 
             {topico && publicado && (
-              <Link
-                to={`/${topico.moduloSlug}#${topico.slug}`}
+              <a
+                href={siteUrl(`/${topico.moduloSlug}#${topico.slug}`)}
                 target="_blank"
                 rel="noreferrer"
                 className={forms.secondary}
               >
                 Ver no site
-              </Link>
+              </a>
             )}
 
             {topico && (

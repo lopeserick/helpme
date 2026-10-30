@@ -110,7 +110,7 @@ export default function Metricas() {
                       {data.avaliacoes.map((a) => (
                         <tr key={a.id}>
                           <td>
-                            <Link to={`/admin/topicos/${a.id}`} className={tabela.titulo}>
+                            <Link to={`/topicos/${a.id}`} className={tabela.titulo}>
                               {a.titulo}
                             </Link>
                             <span className={tabela.tag}>{a.moduloTitulo}</span>
@@ -156,7 +156,7 @@ export default function Metricas() {
                       {data.maisAcessados.map((a) => (
                         <tr key={a.id}>
                           <td>
-                            <Link to={`/admin/topicos/${a.id}`} className={tabela.titulo}>
+                            <Link to={`/topicos/${a.id}`} className={tabela.titulo}>
                               {a.titulo}
                             </Link>
                             <span className={tabela.tag}>{a.moduloTitulo}</span>

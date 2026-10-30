@@ -1,17 +1,22 @@
 import Fastify from 'fastify';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
 import multipart from '@fastify/multipart';
 import rateLimit from '@fastify/rate-limit';
 import estaticos from '@fastify/static';
 import { ZodError } from 'zod';
 import { env } from './env.js';
 import { conexao } from './db/index.js';
+import { exigirOrigemDoPainel } from './lib/origem.js';
 import { garantirPastaDeUploads, TAMANHO_MAXIMO_BYTES } from './lib/uploads.js';
 import { rotasAdmin } from './rotas/admin.js';
 import { rotasAuth } from './rotas/auth.js';
 import { rotasMetricas } from './rotas/metricas.js';
 import { rotasPublicas } from './rotas/publico.js';
+import { rotasSugestoes } from './rotas/sugestoes.js';
+// Integração com o Jira (ainda desligada): veja src/integracoes/jira.ts.
+// import { iniciarSincronizacaoJira } from './integracoes/jira.js';
 
 const app = Fastify({ logger: true, trustProxy: env.TRUST_PROXY });
 
@@ -19,6 +24,24 @@ const app = Fastify({ logger: true, trustProxy: env.TRUST_PROXY });
 // origens diferentes se a API permitir.
 await app.register(cors, { origin: env.corsOrigins, credentials: true });
 await app.register(cookie);
+
+/**
+ * Cabeçalhos de segurança em toda resposta da API: bloqueia ser aberta dentro
+ * de outro site (iframe), impede o navegador de "adivinhar" tipos de arquivo e
+ * não carrega nada de fora. HSTS (HTTPS sempre) só quando houver HTTPS.
+ * Os cabeçalhos das páginas do site e do painel ficam no IIS (docs/iis).
+ */
+await app.register(helmet, {
+  contentSecurityPolicy: {
+    directives: { defaultSrc: ["'none'"], imgSrc: ["'self'"], frameAncestors: ["'none'"] },
+  },
+  // O site e o painel ficam em endereços diferentes e os dois mostram /uploads.
+  crossOriginResourcePolicy: { policy: 'same-site' },
+  hsts: env.COOKIE_SECURE ? { maxAge: 31536000, includeSubDomains: true } : false,
+});
+
+// Ações de escrita no painel só valem vindas do endereço do painel (CSRF).
+app.addHook('onRequest', exigirOrigemDoPainel);
 // Sem limite geral: só as rotas que pedem (login e cadastro) têm.
 await app.register(rateLimit, {
   global: false,
@@ -97,6 +120,12 @@ app.get('/api/saude', async (_requisicao, resposta) => {
 await app.register(rotasPublicas);
 await app.register(rotasAuth);
 await app.register(rotasMetricas);
+await app.register(rotasSugestoes);
 await app.register(rotasAdmin);
 
 await app.listen({ port: env.PORT, host: env.HOST });
+
+// Para ligar a integração com o Jira, descomente a linha abaixo (e a do import
+// lá em cima) depois de preencher JIRA_* no .env e testar com
+// `npm run jira:sincronizar`.
+// iniciarSincronizacaoJira(app.log);

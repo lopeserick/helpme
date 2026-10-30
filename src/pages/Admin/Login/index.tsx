@@ -2,13 +2,14 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import AdminShell from '../../../components/AdminShell';
 import { useAuth } from '../../../admin/auth-context';
+import { siteUrl } from '../../../lib/enderecos';
 import styles from '../forms.module.css';
 
 export default function Login() {
   const { usuario, carregando, entrar } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const destino = (location.state as { from?: string } | null)?.from ?? '/admin';
+  const destino = (location.state as { from?: string } | null)?.from ?? '/';
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -24,7 +25,11 @@ export default function Login() {
     setEnviando(true);
 
     try {
-      await entrar(email, senha);
+      const resultado = await entrar(email, senha);
+      if (resultado === 'codigo') {
+        navigate('/login/codigo', { state: { from: destino } });
+        return;
+      }
       navigate(destino, { replace: true });
     } catch (e) {
       setErro(e instanceof Error ? e.message : 'Não foi possível entrar.');
@@ -36,7 +41,7 @@ export default function Login() {
     <AdminShell
       title="Entrar no painel"
       description="Acesso da equipe que mantém a central de ajuda."
-      back={{ to: '/', label: 'Voltar para a central de ajuda' }}
+      back={{ href: siteUrl('/'), label: 'Voltar para a central de ajuda' }}
       width="narrow"
     >
       <div className={styles.card}>
@@ -81,7 +86,7 @@ export default function Login() {
       </div>
 
       <p className={styles.alt}>
-        Ainda não tem conta? <Link to="/admin/cadastro">Criar conta</Link>
+        Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
       </p>
     </AdminShell>
   );
